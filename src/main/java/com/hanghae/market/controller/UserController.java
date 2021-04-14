@@ -52,4 +52,9 @@ public class UserController {
         return userService.emailCheck(email);
     }
 
+    //권한 인증 테스트.
+    @GetMapping("/boards")
+    public String boards(){
+        return "test";
+    }
 }

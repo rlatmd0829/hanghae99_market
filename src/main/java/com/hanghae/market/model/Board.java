@@ -1,8 +1,7 @@
-package com.hanghae.market.domain;
+package com.hanghae.market.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.hanghae.market.dto.BoardRequestDto;
-import com.hanghae.market.model.User;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -13,7 +12,7 @@ import java.util.List;
 @Entity
 @Getter
 @NoArgsConstructor
-public class Board {
+public class Board extends Timestamped{
 
     @Id @GeneratedValue
     private Long id;

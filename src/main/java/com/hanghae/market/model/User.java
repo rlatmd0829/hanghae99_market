@@ -1,8 +1,6 @@
 package com.hanghae.market.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.hanghae.market.domain.Board;
-import com.hanghae.market.domain.Heart;
 import com.hanghae.market.dto.SignupReqeustDto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -51,6 +49,14 @@ public class User {
     @JsonIgnore
     @OneToMany(mappedBy = "user")
     private List<Heart> hearts = new ArrayList<>();
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "user")
+    private List<Follow> requestUsers = new ArrayList<>();
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "followUser")
+    private List<Follow> responseUsers = new ArrayList<>();
 
 
     public User(SignupReqeustDto reqeustDto) {

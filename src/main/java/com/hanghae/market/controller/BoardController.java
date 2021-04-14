@@ -2,12 +2,10 @@ package com.hanghae.market.controller;
 
 import com.hanghae.market.config.auth.PrincipalDetails;
 import com.hanghae.market.dto.BoardRequestDto;
-import com.hanghae.market.domain.Board;
+import com.hanghae.market.model.Board;
 import com.hanghae.market.s3.S3Uploader;
 import com.hanghae.market.service.BoardService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -42,15 +40,15 @@ public class BoardController {
         return ResponseEntity.ok().build();
     }
 
-    @PutMapping("/boards/{board_id}")
-    public ResponseEntity updateBoard(@PathVariable Long board_id,@RequestBody BoardRequestDto requestDto){
-        boardService.updateBoard(board_id, requestDto);
+    @PutMapping("/boards/{boardId}")
+    public ResponseEntity updateBoard(@PathVariable Long boardId,@RequestBody BoardRequestDto requestDto){
+        boardService.updateBoard(boardId, requestDto);
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("/boards/{board_id}")
-    public ResponseEntity deleteBoard(@PathVariable Long board_id){
-        boardService.deleteBoard(board_id);
+    @DeleteMapping("/boards/{boardId}")
+    public ResponseEntity deleteBoard(@PathVariable Long boardId){
+        boardService.deleteBoard(boardId);
         return ResponseEntity.ok().build();
 
     }

@@ -1,6 +1,5 @@
-package com.hanghae.market.domain;
+package com.hanghae.market.model;
 
-import com.hanghae.market.model.User;
 import lombok.Getter;
 
 import javax.persistence.*;

@@ -1,4 +1,4 @@
-package com.hanghae.market.domain;
+package com.hanghae.market.model;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

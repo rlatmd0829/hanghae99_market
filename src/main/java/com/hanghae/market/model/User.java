@@ -1,11 +1,16 @@
 package com.hanghae.market.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.hanghae.market.domain.Board;
+import com.hanghae.market.domain.Heart;
 import com.hanghae.market.dto.SignupReqeustDto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -38,6 +43,14 @@ public class User {
     @Column(nullable = false)
     @Enumerated(value = EnumType.STRING)
     private UserRole role;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "user")
+    private List<Board> boards = new ArrayList<>();
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "user")
+    private List<Heart> hearts = new ArrayList<>();
 
 
     public User(SignupReqeustDto reqeustDto) {

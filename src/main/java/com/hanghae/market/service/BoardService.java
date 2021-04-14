@@ -2,7 +2,10 @@ package com.hanghae.market.service;
 
 import com.hanghae.market.dto.BoardRequestDto;
 import com.hanghae.market.domain.Board;
+import com.hanghae.market.model.User;
 import com.hanghae.market.repository.BoardRepository;
+import com.hanghae.market.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -10,21 +13,23 @@ import javax.transaction.Transactional;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class BoardService {
-    final
-    BoardRepository boardRepository;
-
-    public BoardService(BoardRepository boardRepository) {
-        this.boardRepository = boardRepository;
-    }
+    private final BoardRepository boardRepository;
+    private final UserRepository userRepository;
 
     public List<Board> getBoard() {
         List<Board> board = boardRepository.findAll();
+        System.out.println(board);
         return board;
     }
 
-    public void createBoard(BoardRequestDto requestDto) {
+    public void createBoard(BoardRequestDto requestDto, Long user_id) {
+        User user = userRepository.findById(user_id).orElseThrow(
+                () -> new IllegalArgumentException("계정이 존재하지 않습니다.")
+        );
         Board board = new Board(requestDto);
+        board.addUser(user);
         boardRepository.save(board);
 
     }

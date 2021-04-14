@@ -1,5 +1,6 @@
 package com.hanghae.market.domain;
 
+import com.hanghae.market.model.User;
 import lombok.Getter;
 
 import javax.persistence.*;
@@ -11,8 +12,14 @@ public class Heart {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "BOARD_ID")
+    //@JoinColumn(name = "USER_ID")
+    private User user;
+
+    @ManyToOne
+    //@JoinColumn(name = "BOARD_ID")
     private Board board;
+
+
 
     public void addBoard(Board board) {
         this.board = board;
@@ -20,4 +27,8 @@ public class Heart {
     }
 
 
+    public void addUser(User user) {
+        this.user = user;
+        user.getHearts().add(this);
+    }
 }

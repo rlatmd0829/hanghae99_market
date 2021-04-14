@@ -78,6 +78,8 @@ public class HeartService {
         if(heart == null){
             return null;
         }else{
+            heart.deleteUser(user);
+            heart.deleteBoard(board);
             heartRepository.deleteById(heart.getId());
             return heart;
         }

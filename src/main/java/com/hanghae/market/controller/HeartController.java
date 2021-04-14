@@ -13,8 +13,12 @@ import java.util.HashMap;
 @RestController
 public class HeartController {
 
-    @Autowired
+    final
     HeartService heartService;
+
+    public HeartController(HeartService heartService) {
+        this.heartService = heartService;
+    }
 
     @GetMapping("/boards/{board_id}/heart")
     public HashMap<String, Object> getHeart(@PathVariable Long board_id) {

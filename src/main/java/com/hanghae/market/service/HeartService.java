@@ -14,11 +14,16 @@ import java.util.List;
 @Service
 public class HeartService {
 
-    @Autowired
+    final
     HeartRepository heartRepository;
 
-    @Autowired
+    final
     BoardRepository boardRepository;
+
+    public HeartService(HeartRepository heartRepository, BoardRepository boardRepository) {
+        this.heartRepository = heartRepository;
+        this.boardRepository = boardRepository;
+    }
 
     public HashMap<String,Object> getHeart(Long board_id) {
         Board board = boardRepository.findById(board_id).orElseThrow(

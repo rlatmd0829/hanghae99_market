@@ -11,8 +11,12 @@ import java.util.List;
 
 @Service
 public class BoardService {
-    @Autowired
+    final
     BoardRepository boardRepository;
+
+    public BoardService(BoardRepository boardRepository) {
+        this.boardRepository = boardRepository;
+    }
 
     public List<Board> getBoard() {
         List<Board> board = boardRepository.findAll();

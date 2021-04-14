@@ -10,11 +10,17 @@ import java.util.HashMap;
 @Service
 public class FollowService {
     
-    @Autowired
+    final
     FollowRepository followRepository;
-    
+
+    public FollowService(FollowRepository followRepository) {
+        this.followRepository = followRepository;
+    }
+
     public HashMap<String,Object> getFollow(Long follow_user_id) {
-        Follow follow = followRepository.findByFollowUserId(follow_user_id);
+        Follow follow = followRepository.findById(follow_user_id).orElseThrow(
+                () -> new IllegalArgumentException("임시")
+        ); // findByFollowUserId
         HashMap<String,Object> hashMap = new HashMap<>();
         if(follow == null){
             hashMap.put("check",false);
@@ -26,7 +32,9 @@ public class FollowService {
     }
 
     public Follow createFollow(Long follow_user_id) {
-        Follow follow = followRepository.findByFollowUserId(follow_user_id);
+        Follow follow = followRepository.findById(follow_user_id).orElseThrow(
+                () -> new IllegalArgumentException("임시")
+        ); // findByFollowUserId
         if(follow == null){
             Follow newFollow = new Follow();
             followRepository.save(newFollow);
@@ -37,7 +45,9 @@ public class FollowService {
     }
 
     public Follow deleteFollow(Long follow_user_id) {
-        Follow follow = followRepository.findByFollowUserId(follow_user_id);
+        Follow follow = followRepository.findById(follow_user_id).orElseThrow(
+                () -> new IllegalArgumentException("임시")
+        ); // findByFollowUserId
         if(follow == null){
             return null;
         }else{

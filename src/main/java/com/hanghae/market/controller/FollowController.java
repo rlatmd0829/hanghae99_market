@@ -13,8 +13,12 @@ import java.util.HashMap;
 @RestController
 public class FollowController {
 
-    @Autowired
+    final
     FollowService followService;
+
+    public FollowController(FollowService followService) {
+        this.followService = followService;
+    }
 
     @GetMapping("/users/{follow_user_id}/follow")
     public HashMap<String, Object> getFollow(@PathVariable Long follow_user_id){

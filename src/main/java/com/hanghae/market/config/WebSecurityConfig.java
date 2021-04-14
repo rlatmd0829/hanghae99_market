@@ -59,7 +59,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                     .antMatchers("/h2-console/**" ).permitAll()
                     .antMatchers("/user/**").permitAll()
-                    .antMatchers("/boards").access("hasRole('ROLE_USER') ")
+                    //.antMatchers("/boards").access("hasRole('ROLE_USER') ")
                     .anyRequest().permitAll();
 
         //h2-console 허용을 위한 코드 *배포시 삭제 *

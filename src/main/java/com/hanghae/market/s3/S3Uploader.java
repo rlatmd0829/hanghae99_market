@@ -64,10 +64,10 @@ public class S3Uploader {
     }
 
     private Optional<File> convert(MultipartFile file) throws IOException{
-        File convertFile = new File("b"+file.getOriginalFilename());
-        System.out.println(convertFile);
+        File convertFile = new File(file.getOriginalFilename());
+
         if(convertFile.createNewFile()){
-            System.out.println("텅과");
+
             try(FileOutputStream fos = new FileOutputStream(convertFile)){
                 fos.write(file.getBytes());
             }

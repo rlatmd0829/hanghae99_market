@@ -28,12 +28,12 @@ public class Board extends Timestamped{
     private boolean exchange;
     private String imgUrl;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     //@JoinColumn(name = "USER_ID")
     private User user;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "board")
+    @OneToMany(mappedBy = "board", cascade = CascadeType.ALL)
     private List<Heart> hearts = new ArrayList<>();
 
 

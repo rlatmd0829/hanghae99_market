@@ -78,8 +78,9 @@ public class HeartService {
         if(heart == null){
             return null;
         }else{
-            heart.deleteUser(user);
-            heart.deleteBoard(board);
+            // delete시 양방향 연관관계 제거 안해주면 casecade인가 설정 해줘야한다?
+            //heart.deleteUser(user);
+            //heart.deleteBoard(board);
             heartRepository.deleteById(heart.getId());
             return heart;
         }

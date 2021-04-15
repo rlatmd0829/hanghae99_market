@@ -1,6 +1,7 @@
 package com.hanghae.market.controller;
 
 import com.hanghae.market.config.auth.PrincipalDetails;
+import com.hanghae.market.dto.BoardMainDto;
 import com.hanghae.market.dto.BoardRequestDto;
 import com.hanghae.market.model.Board;
 import com.hanghae.market.s3.S3Uploader;
@@ -24,7 +25,7 @@ public class BoardController {
 
 
     @GetMapping("/main")
-    public List<Board> getBoard(){
+    public List<BoardMainDto> getBoard(){
         return boardService.getBoard();
     }
 
@@ -40,6 +41,16 @@ public class BoardController {
         return ResponseEntity.ok().build();
     }
 
+//    @PostMapping("/boards")
+//    public ResponseEntity createBoard(@RequestBody @RequestParam("requestDto") BoardRequestDto requestDto,
+//                                      @RequestParam("file") MultipartFile files, @AuthenticationPrincipal PrincipalDetails userDetails) throws IOException {
+//        String imgUrl = s3Uploader.upload(files, "static");
+//        //BoardRequestDto requestDto = new BoardRequestDto(title, content, price, status, exchange, imgUrl);
+//
+//        boardService.createBoard(requestDto, userDetails.getUser().getId());
+//        return ResponseEntity.ok().build();
+//    }
+
     @PutMapping("/boards/{boardId}")
     public ResponseEntity updateBoard(@PathVariable Long boardId,@RequestBody BoardRequestDto requestDto){
         boardService.updateBoard(boardId, requestDto);
@@ -51,6 +62,11 @@ public class BoardController {
         boardService.deleteBoard(boardId);
         return ResponseEntity.ok().build();
 
+    }
+
+    @GetMapping("/boards/{boardId}/details")
+    public Board getDetailBoard(@PathVariable Long boardId, @AuthenticationPrincipal PrincipalDetails userDetails){
+        return boardService.getDetailBoard(boardId, userDetails.getUser().getId());
     }
 
 }

@@ -29,9 +29,9 @@ public class UserController {
 
     @PostMapping("/signups")
     public ResponseEntity signup(@RequestBody @Valid SignupReqeustDto reqeustDto, Errors errors)throws Exception{
-        System.out.println("username :"+reqeustDto.getUsername());
-        System.out.println("password :"+reqeustDto.getPassword());
-        System.out.println("email :"+reqeustDto.getEmail());
+//        System.out.println("username :"+reqeustDto.getUsername());
+//        System.out.println("password :"+reqeustDto.getPassword());
+
         /* 에러 메시지 반환 */
         if(errors.hasErrors()){
             Map<String, String> error = userService.validateHandling(errors);

@@ -19,6 +19,9 @@ import java.io.IOException;
 @RestController
 public class KakaoLoginController {
 
+    /*
+    * 카카오 회원 정보를 받아서 HttpClinet를 통해 항해마켓 서버에게 로그인을 요청하는 파일
+    */
     private final KakaoLoginService kakaoLoginService;
 
     public KakaoLoginController(KakaoLoginService kakaoLoginService) {
@@ -28,12 +31,14 @@ public class KakaoLoginController {
 
     @GetMapping("/kakao/callback")
     public void kakaoLogin(String code,HttpServletResponse response) throws IOException {
-        System.out.println("카카오톡 ");
+
+//        System.out.println("카카오톡 ");
+
         //카카오에서 user정보를 받아와서 DB 저장 . -> DB에 저장된 username과 password받아옴.
         KakaoLoginInfoDto kakaoLoginInfo =kakaoLoginService.kakaoSave(code);
 
-        System.out.println(kakaoLoginInfo.getKakaoId());
-        System.out.println(kakaoLoginInfo.getPassword());
+//        System.out.println(kakaoLoginInfo.getKakaoId());
+//        System.out.println(kakaoLoginInfo.getPassword());
 
         //저장한 kakaoUser정보로 로그인요청
         if(kakaoLoginInfo != null){

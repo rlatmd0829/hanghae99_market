@@ -77,7 +77,7 @@ public class User extends Timestamped{
         this.role = UserRole.ROLE_USER;
     }
 
-    // Kakao 회원
+    // Kakao 회원가입 Dto
     public User(String username,String password,String email,String kakaoId) {
         this.username = username;
 

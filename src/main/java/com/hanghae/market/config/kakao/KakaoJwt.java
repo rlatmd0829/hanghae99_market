@@ -14,6 +14,11 @@ import org.springframework.web.client.RestTemplate;
 
 @Component
 public class KakaoJwt {
+    /*
+    * 카카오에게 요청해서 카카오 유저 정보를 받아오는 코드입니다.
+    *
+    * */
+
 
     public KakaoUserInfoDto getUserInfo(String authorizedCode) {
         // 1. 인가코드 -> 액세스 토큰
@@ -56,6 +61,7 @@ public class KakaoJwt {
 
         return accessToken;
     }
+
 
     private KakaoUserInfoDto getUserInfoByToken(String accessToken){
 

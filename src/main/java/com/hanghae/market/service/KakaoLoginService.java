@@ -9,10 +9,13 @@ import com.hanghae.market.repository.UserRepository;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.stream.DoubleStream;
 
 @Service
 public class KakaoLoginService {
+    /*
+    * 카카오에서 받아온 유저 정보로 카카오 유저를 회원가입시키거나
+    * 이미 회원이 존재하면 해당 회원의 로그인 정보를 controller에게 넘겨주는 파일입니다.
+    * */
 
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;

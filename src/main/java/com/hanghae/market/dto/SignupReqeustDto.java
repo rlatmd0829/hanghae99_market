@@ -28,7 +28,7 @@ public class SignupReqeustDto {
 
     private String myself;
 
-    //    @Pattern(regexp = "/([^\\s]+(?=\\.(jpg|gif|png))\\.\\2)/",
+//    @Pattern(regexp = "/([^\\s]+(?=\\.(jpg|gif|png))\\.\\2)/",
 //            message = "jpg.gif.png파일만 가능합니다.")
     private String profile_img;
 

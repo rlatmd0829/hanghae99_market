@@ -47,23 +47,13 @@ public class UserService {
         return "ture";
     }
 
-    public String usernameCheck(String username){
-        User user = userRepository.findByUsername(username);
-
-        if(user != null){
-            return "false";
-        }else{
-            return "true";
-        }
+    public boolean usernameCheck(String username){
+        return userRepository.existsByUsername(username);
     }
 
-    public String emailCheck(String email){
-        User user = userRepository.findByEmail(email);
-
-        if(user != null){
-            return "false";
-        }else{
-            return "true";
-        }
+    public boolean emailCheck(String email){
+        return userRepository.existsByEmail(email);
     }
+
+
 }

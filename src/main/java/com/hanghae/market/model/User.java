@@ -14,7 +14,7 @@ import java.util.List;
 @Setter
 @Entity
 @NoArgsConstructor
-public class User {
+public class User extends Timestamped{
 
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
@@ -59,13 +59,36 @@ public class User {
     private List<Follow> responseUsers = new ArrayList<>();
 
 
-    public User(SignupReqeustDto reqeustDto) {
+    @Column(nullable = true)
+    private String kakaoId;
 
+    //일반회원 reqequstDto
+    public User(SignupReqeustDto reqeustDto) {
         this.username = reqeustDto.getUsername();
+
         this.password = reqeustDto.getPassword();
+
         this.email = reqeustDto.getEmail();
+
         this.myself = reqeustDto.getMyself();
+
         this.address = new Adderss(reqeustDto.getCity(), reqeustDto.getStreet());
+
         this.role = UserRole.ROLE_USER;
+    }
+
+    // Kakao 회원가입 Dto
+    public User(String username,String password,String email,String kakaoId) {
+        this.username = username;
+
+        this.password = password;
+
+        this.email = email;
+
+        this.myself = "test";
+
+        this.address = new Adderss("test","test");
+        this.role = UserRole.ROLE_USER;
+        this.kakaoId = kakaoId;
     }
 }

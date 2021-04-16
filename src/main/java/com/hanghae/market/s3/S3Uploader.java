@@ -1,7 +1,6 @@
 package com.hanghae.market.s3;
 
 import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import lombok.RequiredArgsConstructor;
@@ -12,11 +11,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 
-import java.awt.*;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 

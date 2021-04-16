@@ -56,6 +56,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
         try{
             String username =
                     JWT.require(Algorithm.HMAC512(JwtProperties.SECRET)).build().verify(jwtToken).getClaim("username").asString();
+
             // JWT토큰 서명이 정상적으로 됨 (토큰 인증 ok)
             if(username != null){
                 User user = userRepository.findByUsername(username);
@@ -67,7 +68,10 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
                 //강제로 시큐리티 세션에 접근하여 authentication객체 저장
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
+
+            //서명이 정상적으로 안됬을 시에 필터를 타게함.
             chain.doFilter(request,response);
+
         }catch (Exception e){
 
             JSONObject json = new JSONObject();

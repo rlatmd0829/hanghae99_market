@@ -13,6 +13,9 @@ import java.util.Map;
 @RestController
 public class LoginErrorHandlerController implements ErrorController {
 
+    /*
+    * login시 발생하는 error를 처리하는 파일입니다.
+    * */
 
     @Override
     public String getErrorPath() {

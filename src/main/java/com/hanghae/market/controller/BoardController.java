@@ -4,6 +4,7 @@ import com.hanghae.market.config.auth.PrincipalDetails;
 import com.hanghae.market.dto.BoardMainDto;
 import com.hanghae.market.dto.BoardRequestDto;
 import com.hanghae.market.model.Board;
+
 import com.hanghae.market.model.Message;
 import com.hanghae.market.s3.S3Uploader;
 import com.hanghae.market.service.BoardService;
@@ -17,6 +18,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
+
+import com.hanghae.market.s3.S3Uploader;
 
 
 @RestController

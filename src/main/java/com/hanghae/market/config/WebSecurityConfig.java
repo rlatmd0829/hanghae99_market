@@ -1,6 +1,5 @@
 package com.hanghae.market.config;
 
-import com.hanghae.market.config.jwt.JwtAuthenticationEntryPoint;
 import com.hanghae.market.config.jwt.JwtAuthorizationFilter;
 import com.hanghae.market.config.jwt.JwtAuthenticationFilter;
 import com.hanghae.market.repository.UserRepository;
@@ -42,11 +41,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 
         http.csrf().disable();
-        //session을 사용하지않겠다 .
+
         http
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)  //session을 사용하지않겠다 .
                 .and()
-                    .exceptionHandling() //예외 처리 설정 -> 동작안함
+                    .exceptionHandling() //예외 처리 설정
                     .authenticationEntryPoint(jwtAuthenticationEntryPoint)
                 //jwt와 cors 관련 filter
                 .and()
@@ -60,6 +59,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                     .antMatchers("/h2-console/**" ).permitAll()
                     .antMatchers("/user/**").permitAll()
                     //.antMatchers("/boards").access("hasRole('ROLE_USER') ")
+                    .antMatchers("/boards/**").permitAll()
+                    .antMatchers("/kakao/**").permitAll()
                     .anyRequest().permitAll();
 
         //h2-console 허용을 위한 코드 *배포시 삭제 *

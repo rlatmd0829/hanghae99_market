@@ -37,8 +37,8 @@ public class S3Uploader {
     }
 
     private String upload(File uploadFile, String dirName){
-        String fileName = dirName + "/" + UUID.randomUUID().toString().replaceAll("-", "");
-        String uploadImageUrl = putS3(uploadFile, fileName);
+        String fileName = dirName + "/" + UUID.randomUUID().toString().replaceAll("-", ""); // 버킷안에 dirName 폴더로 UUID를 사용해 랜덤이름으로 파일이름 저장
+        String uploadImageUrl = putS3(uploadFile, fileName); // S3 업로드
 
         removeNewFile(uploadFile); //로컬에 생성된 File 삭제(MultipartFile -> File 전환 하며 로컬에 파일 생성됨)
         return uploadImageUrl; // 업로드된 파일의 S3 URL 주소 반환
@@ -49,10 +49,10 @@ public class S3Uploader {
                 new PutObjectRequest(bucket, fileName, uploadFile)
                 .withCannedAcl(CannedAccessControlList.PublicRead) // PublicRead 권한으로 업로드 됨
         );
-        return amazonS3.getUrl(bucket, fileName).toString();
+        return amazonS3.getUrl(bucket, fileName).toString(); // Url 받아옴
     }
 
-    private void removeNewFile(File targetFile){
+    private void removeNewFile(File targetFile){ // S3에 올리면서 생성된 로컬파일 삭제
         if(targetFile.delete()){
             log.info("파일이 삭제되었습니다.");
         }else{
@@ -60,7 +60,7 @@ public class S3Uploader {
         }
     }
 
-    private Optional<File> convert(MultipartFile file) throws IOException{
+    private Optional<File> convert(MultipartFile file) throws IOException{ // MultipartFile -> File로 변경
         File convertFile = new File(file.getOriginalFilename());
 
         if(convertFile.createNewFile()){

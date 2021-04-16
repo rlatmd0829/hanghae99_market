@@ -18,7 +18,7 @@ public class FollowService {
     private final UserRepository userRepository;
 
 
-
+    // 팔로우 조회
     public HashMap<String,Object> getFollow(Long followUserId, Long userId) {
         User followUser = userRepository.findById(followUserId).orElseThrow(
                 () -> new IllegalArgumentException("팔로우한 사용자를 찾을 수 없습니다.")
@@ -44,6 +44,7 @@ public class FollowService {
         }
     }
 
+    // 팔로우 하기
     public Follow createFollow(Long followUserId, Long userId) {
         User followUser = userRepository.findById(followUserId).orElseThrow(
                 () -> new IllegalArgumentException("팔로우한 사용자를 찾을 수 없습니다.")
@@ -63,6 +64,7 @@ public class FollowService {
         }
     }
 
+    // 팔로우 취소
     public Follow deleteFollow(Long followUserId, Long userId) {
         User followUser = userRepository.findById(followUserId).orElseThrow(
                 () -> new IllegalArgumentException("팔로우한 사용자를 찾을 수 없습니다.")

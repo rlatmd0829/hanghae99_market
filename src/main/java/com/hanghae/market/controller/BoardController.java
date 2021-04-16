@@ -8,6 +8,7 @@ import com.hanghae.market.model.Message;
 import com.hanghae.market.s3.S3Uploader;
 import com.hanghae.market.service.BoardService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -34,6 +35,16 @@ public class BoardController {
             return boardService.getSearchBoard(searchText);
         }
     }
+
+    // 전체게시글 조회, 검색 (메인페이지), 무한스크롤 page는 1부터 받아야한다.
+//    @GetMapping("/main")
+//    public Page<BoardMainDto> getBoard(@RequestParam("page") int page, @RequestParam(value = "searchText", required = false) String searchText){
+//        if (searchText == null){
+//            return boardService.getBoard(page);
+//        }else{
+//            return boardService.getSearchBoard(searchText, page);
+//        }
+//    }
 
     // 게시글 작성
     @PostMapping("/boards")

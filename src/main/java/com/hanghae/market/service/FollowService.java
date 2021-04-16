@@ -29,7 +29,7 @@ public class FollowService {
         Follow follow = followRepository.findByFollowUserIdAndUserId(followUserId, userId);
 
         // 내 팔로우 수가 아니라 상대방 팔로우 수이다.
-        List<Follow> followCount = followRepository.findByFollowUserId(followUserId); // 내가 지금 로그인한 사용자의 팔로우 카운트를 찾으려면 userId넣으면 될 것 같음
+        List<Follow> followCount = followRepository.findByFollowUserId(followUserId); // 내가 지금 로그인한 아이디에 팔로우 카운트를 찾으려면 userId넣으면 될 것 같음
         Integer Count = followCount.size();
         HashMap<String,Object> hashMap = new HashMap<>();
 
@@ -55,6 +55,7 @@ public class FollowService {
         Follow follow = followRepository.findByFollowUserIdAndUserId(followUserId, userId);
         if(follow == null){
             Follow newFollow = new Follow();
+            // 연관관계 편의 메소드를 사용해서 매핑
             newFollow.addUser(user);
             newFollow.addFollowUser(followUser);
             followRepository.save(newFollow);

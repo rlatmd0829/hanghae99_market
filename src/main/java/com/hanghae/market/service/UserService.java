@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.Errors;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.HashMap;
@@ -44,7 +45,7 @@ public class UserService {
 
         User user = new User(reqeustDto);
         userRepository.save(user);
-        return "ture";
+        return "true";
     }
 
     public boolean usernameCheck(String username){
@@ -55,5 +56,8 @@ public class UserService {
         return userRepository.existsByEmail(email);
     }
 
+
+
+    public User update()
 
 }

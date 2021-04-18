@@ -73,7 +73,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
         /* body에 담을 유저 정보 생성*/
         ObjectMapper objectMapper = new ObjectMapper();
-        UserInfoDto userInfoDto = new UserInfoDto(principalDetails.getUser().getId(),principalDetails.getUsername());
+        UserInfoDto userInfoDto = new UserInfoDto(principalDetails.getUser().getId(),principalDetails.getUsername(),principalDetails.getUser().getEmail());
         String userInfoJson = objectMapper.writeValueAsString(userInfoDto);
 
         /* response에 토큰과 유저정보 담음.*/

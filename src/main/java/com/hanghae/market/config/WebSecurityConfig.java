@@ -44,8 +44,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
         http
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)  //session을 사용하지않겠다 .
-                .and()
-                    .exceptionHandling() //예외 처리 설정
 
                 //jwt와 cors 관련 filter
                 .and()

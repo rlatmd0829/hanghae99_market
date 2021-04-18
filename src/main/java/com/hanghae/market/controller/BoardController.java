@@ -1,6 +1,7 @@
 package com.hanghae.market.controller;
 
 import com.hanghae.market.config.auth.PrincipalDetails;
+import com.hanghae.market.dto.BoardDetailDto;
 import com.hanghae.market.dto.BoardMainDto;
 import com.hanghae.market.dto.BoardRequestDto;
 import com.hanghae.market.model.Board;
@@ -108,7 +109,7 @@ public class BoardController {
 
     // 게시글 상세페이지
     @GetMapping("/boards/{boardId}/details")
-    public Board getDetailBoard(@PathVariable Long boardId, @AuthenticationPrincipal PrincipalDetails userDetails){
+    public BoardDetailDto getDetailBoard(@PathVariable Long boardId, @AuthenticationPrincipal PrincipalDetails userDetails){
         return boardService.getDetailBoard(boardId, userDetails.getUser().getId());
     }
 

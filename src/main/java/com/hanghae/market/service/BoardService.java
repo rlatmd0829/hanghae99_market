@@ -1,5 +1,6 @@
 package com.hanghae.market.service;
 
+import com.hanghae.market.dto.BoardDetailDto;
 import com.hanghae.market.dto.BoardMainDto;
 import com.hanghae.market.dto.BoardRequestDto;
 import com.hanghae.market.model.Board;
@@ -123,11 +124,13 @@ public class BoardService {
 
 
     // 게시글 상세조회
-    public Board getDetailBoard(Long boardId, Long id) {
+    public BoardDetailDto getDetailBoard(Long boardId, Long id) {
         Board board = boardRepository.findById(boardId).orElseThrow(
                 ()-> new IllegalArgumentException("게시글이 존재하지 않습니다.")
         );
-        return board;
+
+        BoardDetailDto boardDetailDto = new BoardDetailDto(board, board.getUser().getId());
+        return boardDetailDto;
     }
 
 

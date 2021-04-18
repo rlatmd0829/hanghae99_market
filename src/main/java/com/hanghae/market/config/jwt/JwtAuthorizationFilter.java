@@ -32,6 +32,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 
     private final UserRepository userRepository;
 
+
     public JwtAuthorizationFilter(AuthenticationManager authenticationManager, UserRepository userRepository) {
         super(authenticationManager);
         this.userRepository = userRepository;
@@ -78,6 +79,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
             json.put("message", "tokenExpired");
             PrintWriter out = response.getWriter();
             out.print(json);
+
 
         }
 

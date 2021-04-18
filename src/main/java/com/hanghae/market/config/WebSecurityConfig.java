@@ -1,5 +1,6 @@
 package com.hanghae.market.config;
 
+import com.hanghae.market.config.jwt.JwtAuthenticationEntryPoint;
 import com.hanghae.market.config.jwt.JwtAuthorizationFilter;
 import com.hanghae.market.config.jwt.JwtAuthenticationFilter;
 import com.hanghae.market.repository.UserRepository;

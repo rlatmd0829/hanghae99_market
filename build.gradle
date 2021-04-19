@@ -41,6 +41,11 @@ dependencies {
 
     //로그인에서 사용하는 httpClinet
     implementation group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.12'
+    
+    //chatting
+    implementation 'org.springframework.boot:spring-boot-starter-websocket'
+    implementation 'org.webjars:sockjs-client:1.1.2'
+    implementation 'org.webjars:stomp-websocket:2.3.3-1'
 
 
 }

@@ -80,7 +80,7 @@ public class BoardService {
                 () -> new IllegalArgumentException("계정이 존재하지 않습니다.")
         );
         Board board = new Board(requestDto);
-        board.addUser(user); // 연관관계 추가 (댓글 만들어지면 또 댓글도 추가해야함)
+        board.addUser(user);
         boardRepository.save(board);
 
     }

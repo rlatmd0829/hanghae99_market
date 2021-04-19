@@ -59,9 +59,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                     //.antMatchers("/boards").access("hasRole('ROLE_USER') ")
                     .antMatchers("/boards/**").permitAll()
                     .antMatchers("/kakao/**").permitAll()
-                    .antMatchers("/api/chat/newChat").permitAll()
+                    .antMatchers("/api/chat/newChat/**").permitAll()
                     .antMatchers("/chat/send").permitAll()
                     .antMatchers("/api/chat/**").permitAll()
+                    .antMatchers("/personalChat/**").permitAll()
                     .anyRequest().permitAll();
 
         //h2-console 허용을 위한 코드 *배포시 삭제 *

@@ -1,6 +1,6 @@
 package com.hanghae.market.model.chat;
 
-import com.hanghae.market.model.Users;
+import com.hanghae.market.model.User;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,14 +21,14 @@ public class ChatRoomJoin {
 
     @ManyToOne
     @JoinColumn(name =  "user_id")
-    private Users user;
+    private User user;
 
     @ManyToOne
     @JoinColumn(name = "room_id")
     private ChatRoom chatRoom;
 
-    public ChatRoomJoin(Users user , ChatRoom chatRoom){
-        this.user=user;
-        this.chatRoom=chatRoom;
+    public ChatRoomJoin(User user , ChatRoom chatRoom){
+        this.user = user;
+        this.chatRoom = chatRoom;
     }
 }

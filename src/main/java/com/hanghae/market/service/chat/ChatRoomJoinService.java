@@ -1,10 +1,11 @@
 package com.hanghae.market.service.chat;
 
-import com.hanghae.market.model.Users;
+import com.hanghae.market.model.User;
 import com.hanghae.market.model.chat.ChatRoom;
 import com.hanghae.market.model.chat.ChatRoomJoin;
 import com.hanghae.market.repository.chat.ChatRoomJoinRepository;
 import com.hanghae.market.repository.chat.ChatRoomRepository;
+import com.hanghae.market.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,21 +19,21 @@ import java.util.Set;
 public class ChatRoomJoinService {
     private final ChatRoomJoinRepository chatRoomJoinRepository;
     private final ChatRoomRepository chatRoomRepository;
-    private final UsersService usersService;
+    private final UserService userService;
 
-    public List<ChatRoomJoin> findByUser(Users user) {
+    public List<ChatRoomJoin> findByUser(User user) {
         return chatRoomJoinRepository.findByUser(user);
     }
 
     @Transactional(readOnly = true)
     public Long check(String user1,String user2){
-        Users userFirst = usersService.findUserByEmailMethod(user1);
+        User userFirst = userService.findUserByEmailMethod(user1);
         List<ChatRoomJoin> listFirst = chatRoomJoinRepository.findByUser(userFirst);
         Set<ChatRoom> setFirst = new HashSet<>();
         for(ChatRoomJoin chatRoomJoin : listFirst){
             setFirst.add(chatRoomJoin.getChatRoom());
         }
-        Users userSecond = usersService.findUserByEmailMethod(user2);
+        User userSecond = userService.findUserByEmailMethod(user2);
         List<ChatRoomJoin> listSecond = chatRoomJoinRepository.findByUser(userSecond);
         for(ChatRoomJoin chatRoomJoin : listSecond){
             if(setFirst.contains(chatRoomJoin.getChatRoom())){
@@ -65,7 +66,7 @@ public class ChatRoomJoinService {
 
     @Transactional
     public void createRoom(String user, ChatRoom chatRoom){
-        ChatRoomJoin chatRoomJoin = new ChatRoomJoin(usersService.findUserByEmailMethod(user),chatRoom);
+        ChatRoomJoin chatRoomJoin = new ChatRoomJoin(userService.findUserByEmailMethod(user),chatRoom);
         chatRoomJoinRepository.save(chatRoomJoin);
     }
 
@@ -82,8 +83,8 @@ public class ChatRoomJoinService {
     public String findAnotherUser(ChatRoom chatRoom, String name) {
         List<ChatRoomJoin> chatRoomJoins = findByChatRoom(chatRoom);
         for(ChatRoomJoin chatRoomJoin : chatRoomJoins){
-            if(!name.equals(chatRoomJoin.getUser().getName())){
-                return chatRoomJoin.getUser().getName();
+            if(!name.equals(chatRoomJoin.getUser().getUsername())){
+                return chatRoomJoin.getUser().getUsername();
             }
         }
         return name;

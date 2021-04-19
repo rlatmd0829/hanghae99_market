@@ -53,6 +53,13 @@ public class UserService {
         return userRepository.existsByEmail(email);
     }
 
+    public User findUserByEmailMethod(String userEmail) {
+        return userRepository.findUsersByEmail(userEmail);
+    }
+    public User findByName(String sender) {
+        return userRepository.findByUsername(sender);
+    }
+
 
 
     //public User update();

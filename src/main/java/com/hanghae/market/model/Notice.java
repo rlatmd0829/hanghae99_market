@@ -19,11 +19,11 @@ public class Notice {
 
     //Message인 경우 채팅방번호, 댓글인 경우 게시글 번호, 팔로우인경우 마이페이지 번호
     @ManyToOne
-    private Users user;
+    private User user;
 
     private LocalDateTime time;
 
-    public Notice(Type type, Users user, String content, String link, LocalDateTime time){
+    public Notice(Type type, User user, String content, String link, LocalDateTime time){
         this.type = type;
         this.user = user;
         this.content = content;

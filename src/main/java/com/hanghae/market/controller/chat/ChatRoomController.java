@@ -3,13 +3,13 @@ package com.hanghae.market.controller.chat;
 import com.hanghae.market.dto.chat.ChatRoomDetailDto;
 import com.hanghae.market.dto.chat.ChatRoomDto;
 import com.hanghae.market.dto.chat.ChatRoomForm;
-import com.hanghae.market.model.Users;
+import com.hanghae.market.model.User;
 import com.hanghae.market.model.chat.ChatMessage;
 import com.hanghae.market.model.chat.ChatRoom;
 import com.hanghae.market.model.chat.ChatRoomJoin;
+import com.hanghae.market.service.UserService;
 import com.hanghae.market.service.chat.ChatRoomJoinService;
 import com.hanghae.market.service.chat.ChatRoomService;
-import com.hanghae.market.service.chat.UsersService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -21,7 +21,7 @@ import java.util.Optional;
 @Controller
 @RequiredArgsConstructor
 public class ChatRoomController {
-    private final UsersService usersService;
+    private final UserService userService;
     private final ChatRoomJoinService chatRoomJoinService;
     private final ChatRoomService chatRoomService;
 
@@ -34,7 +34,7 @@ public class ChatRoomController {
 
         chatRoomDto.setSenderEmail(email);
 
-        Users user = usersService.findUserByEmailMethod(email);
+        User user = userService.findUserByEmailMethod(email);
         List<ChatRoomJoin> chatRoomJoins = chatRoomJoinService.findByUser(user);
         List<ChatRoomForm> chatRooms = chatRoomService.setting(chatRoomJoins, user);
 
@@ -44,7 +44,7 @@ public class ChatRoomController {
             chatRoomDto.setSenderName("");
             chatRoomDto.setSenderId(0L);
         } else {
-            chatRoomDto.setSenderName(user.getName());
+            chatRoomDto.setSenderName(user.getUsername());
             chatRoomDto.setSenderId(user.getId());
         }
         return chatRoomDto;
@@ -53,7 +53,6 @@ public class ChatRoomController {
 
     //바로 채팅버튼 눌렀을 때 -> roomdetail.html
     @PostMapping("/api/chat/newChat")
-    @ResponseBody
     public String newChat(@RequestParam("receiver") String receiverEmail, @RequestParam("sender") String senderEmail) {//, RedirectAttributes redirectAttributes
         Long chatRoomId = chatRoomJoinService.newRoom(receiverEmail, senderEmail);
 //        redirectAttributes.addAttribute("email",user2);
@@ -61,10 +60,11 @@ public class ChatRoomController {
 //        return "redirect:/personalChat/" + chatRoomId;
     }
 
-    @RequestMapping(value = {"/personalChat", "/personalChat"})
+    @RequestMapping(value = {"/personalChat"})
+    @ResponseBody
     public Object goChat(@RequestParam("chatRoomId") Long chatRoomId, @RequestParam("email") String senderEmail) {
 //        String email = (String) request.getAttribute("userEmail");
-        Users userByEmailMethod = usersService.findUserByEmailMethod(senderEmail);
+        User userByEmailMethod = userService.findUserByEmailMethod(senderEmail);
         Optional<ChatRoom> opt = chatRoomService.findById(chatRoomId);
         ChatRoom chatRoom = opt.get();
         List<ChatMessage> messages = chatRoom.getMessages();
@@ -79,7 +79,7 @@ public class ChatRoomController {
             chatRoomDetailDto.setSenderName("");
             chatRoomDetailDto.setSenderId(0L);
         } else {
-            chatRoomDetailDto.setSenderName(userByEmailMethod.getName());
+            chatRoomDetailDto.setSenderName(userByEmailMethod.getUsername());
             chatRoomDetailDto.setSenderId(userByEmailMethod.getId());
         }
         List<ChatRoomJoin> list = chatRoomJoinService.findByChatRoom(chatRoom);
@@ -88,8 +88,8 @@ public class ChatRoomController {
         chatRoomDetailDto.setChatRoomId(chatRoomId);
         int cnt = 0;
         for (ChatRoomJoin join : list) {
-            if (!join.getUser().getName().equals(userByEmailMethod.getName())) {
-                chatRoomDetailDto.setReceiverName(join.getUser().getName());
+            if (!join.getUser().getUsername().equals(userByEmailMethod.getUsername())) {
+                chatRoomDetailDto.setReceiverName(join.getUser().getUsername());
                 ++cnt;
             }
         }

@@ -1,6 +1,6 @@
 package com.hanghae.market.model.chat;
 
-import com.hanghae.market.model.Users;
+import com.hanghae.market.model.User;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -32,9 +32,9 @@ public class ChatMessage {
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
-    private Users writer;
+    private User writer;
 
-    public ChatMessage(String message, LocalDateTime time, ChatRoom chatRoom, Users writer) {
+    public ChatMessage(String message, LocalDateTime time, ChatRoom chatRoom, User writer) {
         this.message = message;
         this.time = time;
         this.chatRoom = chatRoom;

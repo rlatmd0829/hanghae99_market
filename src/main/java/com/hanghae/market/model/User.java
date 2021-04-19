@@ -2,6 +2,7 @@ package com.hanghae.market.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.hanghae.market.dto.SignupReqeustDto;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -14,6 +15,7 @@ import java.util.List;
 @Setter
 @Entity
 @NoArgsConstructor
+@AllArgsConstructor
 public class User extends Timestamped{
 
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -64,6 +66,9 @@ public class User extends Timestamped{
 
     @Column(nullable = true)
     private String kakaoId;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<Notice> notices;
 
     //일반회원 reqequstDto
     public User(SignupReqeustDto reqeustDto) {

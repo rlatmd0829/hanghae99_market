@@ -5,12 +5,14 @@ import lombok.Getter;
 
 @Getter
 public class BoardMainDto {
+    private Long id;
     private String title;
     private String content;
     private int price;
     private String imgUrl;
 
     public BoardMainDto(Board board) {
+        this.id = board.getId();
         this.title = board.getTitle();
         this.content = board.getContent();
         this.price = board.getPrice();

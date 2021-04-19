@@ -2,6 +2,7 @@ package com.hanghae.market.service;
 
 import com.hanghae.market.dto.BoardDetailDto;
 import com.hanghae.market.dto.BoardMainDto;
+import com.hanghae.market.dto.BoardPostDto;
 import com.hanghae.market.dto.BoardRequestDto;
 import com.hanghae.market.model.Board;
 import com.hanghae.market.model.User;
@@ -75,13 +76,15 @@ public class BoardService {
 //    }
 
     // 게시글 작성
-    public void createBoard(BoardRequestDto requestDto, Long userId) {
+    public BoardPostDto createBoard(BoardRequestDto requestDto, Long userId) {
         User user = userRepository.findById(userId).orElseThrow(
                 () -> new IllegalArgumentException("계정이 존재하지 않습니다.")
         );
         Board board = new Board(requestDto);
         board.addUser(user);
         boardRepository.save(board);
+        BoardPostDto boardPostDto = new BoardPostDto(board);
+        return boardPostDto;
 
     }
 
@@ -129,7 +132,7 @@ public class BoardService {
                 ()-> new IllegalArgumentException("게시글이 존재하지 않습니다.")
         );
 
-        BoardDetailDto boardDetailDto = new BoardDetailDto(board, board.getUser().getId());
+        BoardDetailDto boardDetailDto = new BoardDetailDto(board, board.getUser().getId(), board.getUser().getEmail());
         return boardDetailDto;
     }
 

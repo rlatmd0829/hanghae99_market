@@ -59,6 +59,9 @@ public class User extends Timestamped{
     @OneToMany(mappedBy = "followUser")
     private List<Follow> responseUsers = new ArrayList<>();
 
+    @JsonIgnore
+    @OneToMany(mappedBy = "user")
+    private List<Comment> comments = new ArrayList<>();
 
     @Column(nullable = true)
     private String kakaoId;

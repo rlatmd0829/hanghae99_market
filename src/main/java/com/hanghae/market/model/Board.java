@@ -22,10 +22,10 @@ public class Board extends Timestamped{
     private String content;
     @Column(nullable = false)
     private int price;
-    @Column(nullable = false)
-    private boolean status;
-    @Column(nullable = false)
-    private boolean exchange;
+//    @Column(nullable = true)
+//    private boolean status;
+//    @Column(nullable = true)
+//    private boolean exchange;
     private String imgUrl;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -36,13 +36,17 @@ public class Board extends Timestamped{
     @OneToMany(mappedBy = "board", cascade = CascadeType.ALL)
     private List<Heart> hearts = new ArrayList<>();
 
+    @JsonIgnore
+    @OneToMany(mappedBy = "board", cascade = CascadeType.ALL)
+    private List<Comment> comments = new ArrayList<>();
+
 
     public Board(BoardRequestDto requestDto) {
         this.title = requestDto.getTitle();
         this.content = requestDto.getContent();
         this.price = requestDto.getPrice();
-        this.status = requestDto.isStatus();
-        this.exchange = requestDto.isExchange();
+        //this.status = requestDto.isStatus();
+        //this.exchange = requestDto.isExchange();
         this.imgUrl = requestDto.getImgUrl();
     }
 
@@ -50,8 +54,8 @@ public class Board extends Timestamped{
         this.title = requestDto.getTitle();
         this.content = requestDto.getContent();
         this.price = requestDto.getPrice();
-        this.status = requestDto.isStatus();
-        this.exchange = requestDto.isExchange();
+        //this.status = requestDto.isStatus();
+        //this.exchange = requestDto.isExchange();
         this.imgUrl = requestDto.getImgUrl();
     }
 

@@ -7,4 +7,6 @@ import java.util.List;
 
 public interface BoardRepository extends JpaRepository<Board, Long> {
     List<Board> findAllByOrderByModifiedAtDesc();
+
+    List<Board> findByTitleContainingOrContentContaining(String title, String title1);
 }

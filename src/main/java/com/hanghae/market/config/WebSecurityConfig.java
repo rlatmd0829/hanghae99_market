@@ -23,7 +23,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final CorsFilter corsFilter;
     private final UserRepository userRepository;
-    private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;//로그인 실패시
 
     /* 비밀번호 암호화 */
     @Bean
@@ -45,9 +44,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
         http
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)  //session을 사용하지않겠다 .
-                .and()
-                    .exceptionHandling() //예외 처리 설정
-                    .authenticationEntryPoint(jwtAuthenticationEntryPoint)
+
                 //jwt와 cors 관련 filter
                 .and()
                     .addFilter(corsFilter)

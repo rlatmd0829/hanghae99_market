@@ -4,6 +4,7 @@ import com.hanghae.market.config.auth.PrincipalDetails;
 import com.hanghae.market.model.Heart;
 import com.hanghae.market.model.Message;
 import com.hanghae.market.service.HeartService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -12,14 +13,10 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 
 @RestController
+@RequiredArgsConstructor
 public class HeartController {
 
-    final
-    HeartService heartService;
-
-    public HeartController(HeartService heartService) {
-        this.heartService = heartService;
-    }
+    private final HeartService heartService;
 
     @GetMapping("/boards/{boardId}/heart")
     public HashMap<String, Object> getHeart(@PathVariable Long boardId, @AuthenticationPrincipal PrincipalDetails userDetails) {

@@ -22,6 +22,7 @@ public class HeartService {
     private final UserRepository userRepository;
 
 
+    // 좋아요 조회
     public HashMap<String,Object> getHeart(Long boardId, Long userId) {
         User user = userRepository.findById(userId).orElseThrow(
                 () -> new IllegalArgumentException("계정이 존재하지 않습니다.")
@@ -47,6 +48,7 @@ public class HeartService {
         }
     }
 
+    // 좋아요 하기
     public Heart createHeart(Long boardId, Long userId){
         User user = userRepository.findById(userId).orElseThrow(
                 () -> new IllegalArgumentException("계정이 존재하지 않습니다.")
@@ -66,6 +68,7 @@ public class HeartService {
         }
     }
 
+    // 좋아요 취소
     @Transactional
     public Heart DeleteHeart(Long boardId, Long userId){
         User user = userRepository.findById(userId).orElseThrow(

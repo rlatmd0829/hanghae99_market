@@ -2,6 +2,7 @@ package com.hanghae.market.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.hanghae.market.dto.SignupReqeustDto;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -63,16 +64,20 @@ public class User extends Timestamped{
     private String kakaoId;
 
     //일반회원 reqequstDto
-    public User(SignupReqeustDto reqeustDto) {
-        this.username = reqeustDto.getUsername();
+    @Builder
+    public User(String username , String password,String email,String myself,String city,String street) {
+        this.username = username;
 
-        this.password = reqeustDto.getPassword();
+        this.password = password;
 
-        this.email = reqeustDto.getEmail();
+        this.email = email;
 
-        this.myself = reqeustDto.getMyself();
+        this.myself = myself;
 
-        this.address = new Adderss(reqeustDto.getCity(), reqeustDto.getStreet());
+        this.address = Adderss.builder()
+                .city(city)
+                .street(street)
+                .build();
 
         this.role = UserRole.ROLE_USER;
     }

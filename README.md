@@ -11,33 +11,6 @@
 - 채팅
 
 
-
-## 테이블 설계
-
-![image-20210420152337890](C:\Users\rlatm\AppData\Roaming\Typora\typora-user-images\image-20210420152337890.png)
-
-![image-20210420152355921](C:\Users\rlatm\AppData\Roaming\Typora\typora-user-images\image-20210420152355921.png)
-
-![image-20210420152421586](C:\Users\rlatm\AppData\Roaming\Typora\typora-user-images\image-20210420152421586.png)
-
-![image-20210420152658123](C:\Users\rlatm\AppData\Roaming\Typora\typora-user-images\image-20210420152658123.png)
-
-![image-20210420152708847](C:\Users\rlatm\AppData\Roaming\Typora\typora-user-images\image-20210420152708847.png)
-
-
-
-## API 설계
-
-![image-20210420152525685](C:\Users\rlatm\AppData\Roaming\Typora\typora-user-images\image-20210420152525685.png)
-
-![image-20210420152542861](C:\Users\rlatm\AppData\Roaming\Typora\typora-user-images\image-20210420152542861.png)
-
-![image-20210420152610001](C:\Users\rlatm\AppData\Roaming\Typora\typora-user-images\image-20210420152610001.png)
-
-![image-20210420152626831](C:\Users\rlatm\AppData\Roaming\Typora\typora-user-images\image-20210420152626831.png)
-
-
-
 ## 게시글 기능
 
 ### Board
@@ -354,8 +327,6 @@ public class S3Uploader {
 
 
 ## 댓글 기능
-
-
 
 ### Comment
 
@@ -724,7 +695,7 @@ public class HeartService {
 
 
 
-## Follow
+### Follow
 
 ```java
 @Entity

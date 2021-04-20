@@ -1,15 +1,15 @@
 package com.hanghae.market.dto;
 
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import com.hanghae.market.model.User;
+import lombok.*;
 
 import javax.validation.constraints.*;
 
+
+@RequiredArgsConstructor
 @Getter
 @Setter
-@NoArgsConstructor
 public class SignupReqeustDto {
 
     @NotBlank(message = "아이디를 비워둘 수 없습니다.")
@@ -19,7 +19,7 @@ public class SignupReqeustDto {
 
     @NotBlank(message = "비밀번호를 비워둘 수 없습니다.")
     @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*[0-9])(?=.*[$@$!%*#?&])[A-Za-z[0-9]$@$!%*#?&]{8,20}$",
-            message = "비밀번호는 영문 대소문자와 숫자를 포함한 8-20자여야합니다.")
+            message = "비밀번호는 영문 대소문자와 숫자,특수문자를 포함한 8-20자여야합니다.")
     private String password;
 
     @NotBlank(message = "이메일을 비워둘 수 없습니다.")
@@ -38,6 +38,7 @@ public class SignupReqeustDto {
     private String street;
 
 
+    @Builder
     public SignupReqeustDto(String username, String password, String email, String myself, String profile_img, String city, String street) {
         this.username = username;
         this.password = password;
@@ -46,5 +47,16 @@ public class SignupReqeustDto {
         this.profile_img = profile_img;
         this.city = city;
         this.street = street;
+    }
+
+    public User toEntity(){
+        return User.builder()
+                .username(username)
+                .password(password)
+                .email(email)
+                .myself(myself)
+                .city(city)
+                .street(street)
+                .build();
     }
 }

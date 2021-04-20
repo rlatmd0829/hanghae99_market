@@ -14,14 +14,14 @@ public class BoardDetailDto {
     private Long userId;
     private String userEmail;
 
-    public BoardDetailDto(Board board, Long userId, String userEmail) {
+    public BoardDetailDto(Board board) {
         this.title = board.getTitle();
         this.content = board.getContent();
         this.price = board.getPrice();
         //this.status = board.isStatus();
         //this.exchange = board.isExchange();
         this.imgUrl = board.getImgUrl();
-        this.userId = userId;
-        this.userEmail = userEmail;
+        this.userId = board.getUser().getId();
+        this.userEmail = board.getUser().getEmail();
     }
 }

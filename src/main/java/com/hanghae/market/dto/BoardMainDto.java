@@ -10,6 +10,7 @@ public class BoardMainDto {
     private String content;
     private int price;
     private String imgUrl;
+    private Long userId;
 
     public BoardMainDto(Board board) {
         this.id = board.getId();
@@ -17,5 +18,6 @@ public class BoardMainDto {
         this.content = board.getContent();
         this.price = board.getPrice();
         this.imgUrl = board.getImgUrl();
+        this.userId = board.getUser().getId();
     }
 }

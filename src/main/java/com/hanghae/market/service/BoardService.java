@@ -40,7 +40,7 @@ public class BoardService {
 
     // 검색한 게시글 조회
     public List<BoardMainDto> getSearchBoard(String title) {
-        List<Board> board = boardRepository.findByTitleContainingOrContentContaining(title, title);
+        List<Board> board = boardRepository.findByTitleContainingOrContentContainingOrderByModifiedAtDesc(title, title);
         List<BoardMainDto> mainDtoList = new ArrayList<>();
         // main에 필요한 값들만 Dto로 만들어서 보내준다.
         for(int i=0; i<board.size(); i++){
@@ -90,7 +90,7 @@ public class BoardService {
 
     // 게시글 수정
     @Transactional
-    public Board updateBoard(Long boardId, BoardRequestDto requestDto, Long userId) {
+    public BoardPostDto updateBoard(Long boardId, BoardRequestDto requestDto, Long userId) {
         User user = userRepository.findById(userId).orElseThrow(
                 () -> new IllegalArgumentException("계정이 존재하지 않습니다.")
         );
@@ -99,7 +99,8 @@ public class BoardService {
         );
         if (board.getUser().getId().equals(userId)){
             board.update(requestDto);
-            return board;
+            BoardPostDto boardPostDto = new BoardPostDto(board);
+            return boardPostDto;
         }
         else{
             return null;

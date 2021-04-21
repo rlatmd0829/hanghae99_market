@@ -35,6 +35,7 @@ public class BoardController {
     @GetMapping("/main")
     public List<BoardMainDto> getBoard(@RequestParam(value = "searchText", required = false) String searchText){
         if (searchText == null){
+            System.out.println("-----------------------------------");
             return boardService.getBoard();
         }else{
             return boardService.getSearchBoard(searchText);
@@ -76,9 +77,9 @@ public class BoardController {
 
     // 게시글 수정
     @PutMapping("/boards/{boardId}")
-    public ResponseEntity updateBoard(@PathVariable Long boardId, @RequestParam("title") String title, @RequestParam("content") String content,
+    public BoardPostDto updateBoard(@PathVariable Long boardId, @RequestParam("title") String title, @RequestParam("content") String content,
                                       @RequestParam("price") int price, @RequestParam(value = "status", required = false) boolean status, @RequestParam(value = "exchange", required = false) boolean exchange,
-                                      @RequestParam("file") MultipartFile files, @RequestParam(value = "imgUrl", required = false) String imgUrl, @AuthenticationPrincipal PrincipalDetails userDetails) throws IOException {
+                                      @RequestParam(value = "file", required = false) MultipartFile files, @RequestParam(value = "imgUrl", required = false) String imgUrl, @AuthenticationPrincipal PrincipalDetails userDetails) throws IOException {
 
         // 이미지 수정없이 게시글 수정할 때는 s3에 업로드 할 필요 없으므로 imgUrl이 안넘어 올 경우에만 업로드를 시켜준다.
         if(imgUrl == null) {
@@ -87,12 +88,11 @@ public class BoardController {
         // 이미지를 수정안한 상태에서 보낼경우 또 업로드 하지않게 만들어야 할듯
         BoardRequestDto requestDto = new BoardRequestDto(title, content, price, status, exchange, imgUrl);
 
-        Board board = boardService.updateBoard(boardId, requestDto, userDetails.getUser().getId());
-        if (board==null){
-            Message message = new Message("자신이 작성한 게시글만 수정할 수 있습니다.");
-            return new ResponseEntity<>(message, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-        return ResponseEntity.ok().build();
+        return boardService.updateBoard(boardId, requestDto, userDetails.getUser().getId());
+//        if (board==null){
+//            Message message = new Message("자신이 작성한 게시글만 수정할 수 있습니다.");
+//            return new ResponseEntity<>(message, HttpStatus.INTERNAL_SERVER_ERROR);
+//        }
     }
 
     // 게시글 삭제

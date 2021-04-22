@@ -929,12 +929,12 @@ public class FollowService {
 
         private String myself;
 
-
+``` 
 - @vaild 어노테이션을 이용해서 객체에서 유효성 검사를 처리합니다. (controller의 @RequestBody 에 @vaild 추가해서 사용.)
 - @Patten : 정규식을 이용하여 유효성 검사 가능.
 - @NotBlank : 빈값(공백 포함)인 경우 프론트에게 error메세지 반환.
 - @Email : 이메일 양식 확인
-``` 
+
 
 
 ### UserController

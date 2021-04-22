@@ -2,7 +2,6 @@ package com.hanghae.market.service;
 
 
 import com.hanghae.market.dto.SignupReqeustDto;
-import com.hanghae.market.model.User;
 import com.hanghae.market.repository.UserRepository;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -40,18 +39,21 @@ public class UserService {
         String encodPassword = bCryptPasswordEncoder.encode(reqeustDto.getPassword());
         reqeustDto.setPassword(encodPassword);
 
-        User user = new User(reqeustDto);
-        userRepository.save(user);
+        userRepository.save(reqeustDto.toEntity());
         return "true";
     }
 
-    public boolean usernameCheck(String username){
-        return userRepository.existsByUsername(username);
+    public String usernameCheck(String username){
+        boolean result = userRepository.existsByUsername(username);
+
+        if (!result) {
+            return "true";
+        }else{
+            return "false";
+        }
+
     }
 
-    public boolean emailCheck(String email){
-        return userRepository.existsByEmail(email);
-    }
 
     public User findUserByEmailMethod(String userEmail) {
         return userRepository.findUsersByEmail(userEmail);
@@ -60,8 +62,12 @@ public class UserService {
         return userRepository.findByUsername(sender);
     }
 
-
-
-    //public User update();
-
+    public String emailCheck(String email){
+        boolean result =  userRepository.existsByEmail(email);
+        if (!result) {
+            return "true";
+        }else{
+            return "false";
+        }
+    }
 }

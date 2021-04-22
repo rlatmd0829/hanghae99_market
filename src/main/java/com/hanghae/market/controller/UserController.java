@@ -38,17 +38,17 @@ public class UserController {
             return new ResponseEntity(error, HttpStatus.INSUFFICIENT_STORAGE);
         }
 
-        Boolean usernameCheck = userService.usernameCheck(reqeustDto.getUsername());
-        Boolean emailCheck = userService.emailCheck(reqeustDto.getEmail());
+        String usernameCheck = userService.usernameCheck(reqeustDto.getUsername());
+        String emailCheck = userService.emailCheck(reqeustDto.getEmail());
 
-        if(usernameCheck){
+        if(usernameCheck =="false"){
 
             //validateHandling의 error와 데이터 형식을 맞춰서 return 해주기 위해서 json형태로..
             Map<String, String> usernameResult = new HashMap<>();
             usernameResult.put("username", "아이디 중복입니다.");
             return new ResponseEntity(usernameResult,HttpStatus.INSUFFICIENT_STORAGE);
 
-        }else if(emailCheck){
+        }else if(emailCheck == "false"){
             Map<String, String> emailResult = new HashMap<>();
             emailResult.put("email", "이메일 중복입니다");
             return new ResponseEntity(emailResult,HttpStatus.INSUFFICIENT_STORAGE);
@@ -62,15 +62,15 @@ public class UserController {
     }
 
     /* 아이디(username) 중복 체크 */
-    @GetMapping("/signups/username")
-    public ResponseEntity<Boolean> username(@RequestBody SignupReqeustDto reqeustDto){
-        return ResponseEntity.ok(userService.usernameCheck(reqeustDto.getUsername()));
+    @GetMapping("/signups/username/{username}")
+    public ResponseEntity username(@PathVariable String username){
+        return ResponseEntity.ok(userService.usernameCheck(username));
     }
 
     /* 이메일 중복 체크 */
-    @GetMapping("/signups/email")
-    public ResponseEntity<Boolean> email(@RequestBody SignupReqeustDto reqeustDto){
-        return ResponseEntity.ok(userService.emailCheck(reqeustDto.getEmail()));
+    @GetMapping("/signups/email/{email}")
+    public ResponseEntity email(@PathVariable String email){
+        return ResponseEntity.ok(userService.emailCheck(email));
     }
 
 

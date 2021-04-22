@@ -54,6 +54,14 @@ public class UserService {
 
     }
 
+
+    public User findUserByEmailMethod(String userEmail) {
+        return userRepository.findUsersByEmail(userEmail);
+    }
+    public User findByName(String sender) {
+        return userRepository.findByUsername(sender);
+    }
+
     public String emailCheck(String email){
         boolean result =  userRepository.existsByEmail(email);
         if (!result) {
@@ -62,7 +70,4 @@ public class UserService {
             return "false";
         }
     }
-
-
-
 }

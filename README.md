@@ -898,3 +898,277 @@ public class FollowService {
 
 - 현재로그인한 사용자가 followUserId 사용자한테 follow한 상태인지 확인하기 위해서 **followRepository.findByFollowUserIdAndUserId**를 사용하여 테이블이 존재한다면 팔로우를 한 상태이기 때문에 map에 true를 넣어서 반환해줍니다.
 - 그리고 followUserId 사용자에 총 팔로우 수를 **followRepository.findByFollowUserId**를 사용하여 List.size()로 팔로우 수를 찾아서 map에 넣어서 반환해줍니다.
+
+
+
+<br>
+<br>
+
+## 회원가입 기능
+
+### SignupReqeustDto
+``` java
+    @RequiredArgsConstructor
+    @Getter
+    @Setter
+    public class SignupReqeustDto {
+
+        @NotBlank(message = "아이디를 비워둘 수 없습니다.")
+        @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*[0-9])[A-Za-z[0-9]]{4,12}$",
+                message = "아이디는 숫자와 영어를 포함한 4-12글자여야합니다.")
+        private String username;
+
+        @NotBlank(message = "비밀번호를 비워둘 수 없습니다.")
+        @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*[0-9])(?=.*[$@$!%*#?&])[A-Za-z[0-9]$@$!%*#?&]{8,20}$",
+                message = "비밀번호는 영문 대소문자와 숫자,특수문자를 포함한 8-20자여야합니다.")
+        private String password;
+
+        @NotBlank(message = "이메일을 비워둘 수 없습니다.")
+        @Email(message = "메일 양식을 지켜주세요.")
+        private String email;
+
+        private String myself;
+
+
+- @vaild 어노테이션을 이용해서 객체에서 유효성 검사를 처리합니다. (controller의 @RequestBody 에 @vaild 추가해서 사용.)
+- @Patten : 정규식을 이용하여 유효성 검사 가능.
+- @NotBlank : 빈값(공백 포함)인 경우 프론트에게 error메세지 반환.
+- @Email : 이메일 양식 확인
+``` 
+
+
+### UserController
+
+``` java
+    /* 아이디(username) 중복 체크 */
+    @GetMapping("/signups/username/{username}")
+    public ResponseEntity username(@PathVariable String username){
+        return ResponseEntity.ok(userService.usernameCheck(username));
+    }
+
+    /* 이메일 중복 체크 */
+    @GetMapping("/signups/email/{email}")
+    public ResponseEntity email(@PathVariable String email){
+        return ResponseEntity.ok(userService.emailCheck(email));
+    }
+``` 
+- 서버단에서 이메일과 아이디를  DB에 혹시라도 잘못된 데이터가 들어가지않도록 처리했습니다.
+
+
+### UserControllerTest
+``` java
+ @Test
+        public void 회원가입() throws Exception {
+
+            //given
+            SignupReqeustDto reqeustDto = SignupReqeustDto.builder()
+                    .username(username)
+                    .password(password)
+                    .email(email)
+                    .city(city)
+                    .street(street)
+                    .myself(myself)
+                    .build();
+            String url = "http://localhost:" + port + "/signups";
+
+            //when
+            ResponseEntity<Long> responseEntity = restTemplate.postForEntity(url, reqeustDto, Long.class);
+
+            //then
+            assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+
+            List<User> all = userRepository.findAll();
+
+            assertThat(all.get(0).getUsername()).isEqualTo(username);
+            assertThat(bCryptPasswordEncoder.matches(all.get(0).getPassword(), password));
+            assertThat(all.get(0).getEmail()).isEqualTo(email);
+            assertThat(all.get(0).getMyself()).isEqualTo(myself);
+            assertThat(all.get(0).getAddress().getCity()).isEqualTo(city);
+            assertThat(all.get(0).getAddress().getStreet()).isEqualTo(street);
+        }
+
+``` 
+- 회원가입과 관련된 테스트 코드를 작성하였습니다.
+
+<br>
+<br>
+
+## 로그인 기능
+
+
+### WebSecurityConfig
+``` java
+@Configuration
+@EnableWebSecurity//시큐리티 활성화
+@RequiredArgsConstructor
+public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+
+    private final CorsFilter corsFilter;
+    private final UserRepository userRepository;
+
+    /* 비밀번호 암호화 */
+    @Bean
+    public BCryptPasswordEncoder encodePwd(){
+        return new BCryptPasswordEncoder();
+    }
+
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+
+        // 한글 인코딩
+        CharacterEncodingFilter filter = new CharacterEncodingFilter();
+        filter.setEncoding("UTF-8");
+        filter.setForceEncoding(true);
+        http.addFilterBefore(filter, CsrfFilter.class);
+
+
+        http.csrf().disable();
+
+        http
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)  //session을 사용하지않겠다 .
+
+                //jwt와 cors 관련 filter
+                .and()
+                    .addFilter(corsFilter)
+                    .formLogin().disable()
+                    .httpBasic().disable()
+                    .addFilter(new JwtAuthenticationFilter(authenticationManager()))
+                    .addFilter(new JwtAuthorizationFilter(authenticationManager(),userRepository))
+                //권한 설정
+                .authorizeRequests()
+                    .antMatchers("/h2-console/**" ).permitAll()
+                    .antMatchers("/user/**").permitAll()
+                    //.antMatchers("/boards").access("hasRole('ROLE_USER') ")
+                    .antMatchers("/boards/**").permitAll()
+                    .antMatchers("/kakao/**").permitAll()
+                    .anyRequest().permitAll();
+
+    }
+
+}
+``` 
+
+- JwtAuthenticationFilter(토큰발급)와 JwtAuthorizationFilter(토큰 인증)를 구현해 Spring security 필터가 작동되기전에 구현한 필터를 타도록 설정을 해두었습니다.
+- jwt토큰을 사용함으로 session을 사용하지않고 구현한 필터를 통해 로그인과 권한 인증이 검증되도록 구현했습니다.
+
+### JwtAuthenticationFilter
+``` java
+@RequiredArgsConstructor
+public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
+
+    private final AuthenticationManager authenticationManager;
+
+    // login요청을 하면 로그인 시도를 위해서 실행되는 함수.
+    @Override
+    public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
+        System.out.println("로그인 시도 중.");
+
+
+        try {
+            //username,password를 받는다.
+            ObjectMapper om = new ObjectMapper();
+            User user = om.readValue(request.getInputStream(), User.class);
+            System.out.println(user);
+
+            UsernamePasswordAuthenticationToken authenticationToken
+                    = new UsernamePasswordAuthenticationToken(user.getUsername(),user.getPassword());
+
+            //PrincipalDetailsService의 loadUserByUseranme() 함수가 실행됨.
+            Authentication authentication = authenticationManager.authenticate(authenticationToken);
+            PrincipalDetails principalDetails = (PrincipalDetails) authentication.getPrincipal();
+            System.out.println("로그인 완료 : "+ principalDetails.getUser().getUsername());
+            return authentication;
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+        return null;
+    }
+
+    //JWT토큰을 만들어서 response에 넘겨줌.
+    @Override
+    protected void successfulAuthentication(HttpServletRequest request,
+                                            HttpServletResponse response,
+                                            FilterChain chain,
+                                            Authentication authResult) throws IOException, ServletException {
+        System.out.println("인증 완료 토큰발급.");
+
+        // user정보를 통해서 jwt토큰 생성.
+        PrincipalDetails principalDetails = (PrincipalDetails) authResult.getPrincipal();
+        String jwtToken = JWT.create()
+                .withSubject(JwtProperties.SECRET)
+                .withExpiresAt(new Date(System.currentTimeMillis() + JwtProperties.EXPIRATION_TIME))
+                .withClaim("id", principalDetails.getUser().getId())
+                .withClaim("username", principalDetails.getUser().getUsername())
+                .sign(Algorithm.HMAC512(JwtProperties.SECRET));
+
+        /* body에 담을 유저 정보 생성*/
+        ObjectMapper objectMapper = new ObjectMapper();
+        UserInfoDto userInfoDto = new UserInfoDto(principalDetails.getUser().getId(),principalDetails.getUsername(),principalDetails.getUser().getEmail());
+        String userInfoJson = objectMapper.writeValueAsString(userInfoDto);
+
+        /* response에 토큰과 유저정보 담음.*/
+        response.addHeader(JwtProperties.HEADER_STRING,JwtProperties.TOKEN_PREFIX+jwtToken);
+        response.addHeader("Content-type","applcation/json");
+        response.getWriter().write(userInfoJson);
+    }
+}
+```
+- UsernamePasswordAuthenticationFilter 필터를 상속받아 구현했으며 토큰을 만들어서 발급하는 방식으로 되어있습니다.
+- attemptAuthentication함수가 요청을 성공적으로 수행하면 successfulAuthentication가 작동하는 방식으로 구현되어있습니다. 토큰을 발급해 유저정보를 reponse에 실어 보냅니다.
+
+### KakaoLoginController
+
+```java
+   //저장한 kakaoUser정보로 로그인요청
+        if(kakaoLoginInfo != null){
+
+            String username = kakaoLoginInfo.getKakaoId();
+            String password = kakaoLoginInfo.getPassword();
+
+            //HttpPost 요청
+            HttpClient client = HttpClientBuilder.create().build();
+            String postUrl ="http://localhost:8080/login";
+            HttpPost httpPost = new HttpPost(postUrl);
+            String data = "{" +
+                    "\"username\": \""+username+"\", " +
+                    "\"password\": \""+password+"\""+
+                    "}";
+
+            StringEntity entity = new StringEntity(data, ContentType.APPLICATION_FORM_URLENCODED);
+            httpPost.setEntity(entity);
+
+            HttpResponse responsePost = client.execute(httpPost);
+
+            //HttpPost요청이 정상적으로 완료 되었다면
+            if (responsePost.getStatusLine().getStatusCode() == 200) {
+
+                // response Body에 있는 값을 꺼냄
+                HttpEntity entitys = responsePost.getEntity();
+                String content = EntityUtils.toString(entitys);
+
+                // response header에 있는 token꺼냄
+                String value = responsePost.getFirstHeader("Authorization").getValue();
+
+                //다시 진짜 사용자의 요청에 리턴해 줄 response에 토큰과 사용자 정보를 넣는다.
+                response.addHeader("Authonrazation", value);
+                response.getWriter().write(content);
+
+            } else {
+                //에러 처리.
+                response.getWriter().write("kakaoLoginError");
+            }
+
+        }else{
+            //에러처리
+            response.getWriter().write("kakaoUserNotFount");
+        }
+        
+  ```
+  - 카카오톡 로그인의 경우 카카오서버에서 카카오 유저의 정보를 반환해서 해당하는 유저가 없는 경우에 회원가입을 진행합니다 . 그 후 회원가입된 정보를 토대로 구현해둔 login로직을 타도록 HttpClinet를 이용해 서버에게 로그인 요청을 보내는 방식으로 구현되어있습니다.
+
+
+
+

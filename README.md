@@ -3,11 +3,48 @@
 항해마켓 프로젝트입니다.
 항해마켓은 판매자가 팔고싶은 물건을 등록할 수 있고 판매자와 구매자 간의 채팅기능을 사용할 수 있는 마켓입니다.
 
+팀프로젝트의 백엔드 Repository 입니다.
+
+[프론트엔드 Repository](https://github.com/Jinnycorn/hanghaemarket)
+
+# 프로젝트 특징
+- React, Spring을 기반으로 프로젝트 구현
+
+    - 각 파트의 별도 Repository를 생성 후 작업
+    - 프론트 : AWS S3 정적 호스팅
+    - 백엔드 : AWS EC2 서버 호스팅
+    - 빌드 후, S3와 EC2 연동
+
+- 로그인 처리는 Jwt Token 방식으로 처리
+- 게시글 작성 시 프론트에서 이미지 파일 형태로 받아 서버측에서 S3에 업로드 후 Url 돌려주는 방식
+- 채팅은 STOMP와 SockJS로 구성
+
+# 개요
+- 명칭 : 항해마켓
+- 개발 인원 : 5명 (프론트 2명[허민규,이지은], 백엔드 3명[김승욱,장현준,이은지])
+- 개발 기간 : 2021.04.09 ~ 2021.04.22
+- 개발 환경 : React, Spring
+- 형상 관리 툴 : git
+- 일정 관리 툴 : [Notion](https://www.notion.so/3295a6aca9bd411b9cc7b5eadb9239cb?v=002a8755c0414bf388614efa88f27d8a)
+- 사이트 : 
+- 시연 영상 : 
+
+# API 설계
+![image](https://user-images.githubusercontent.com/70622731/115699219-6b95b400-a3a0-11eb-8c00-c4fcd0c3f420.png)
+![image](https://user-images.githubusercontent.com/70622731/115699310-823c0b00-a3a0-11eb-94ca-103b24c80005.png)
+![image](https://user-images.githubusercontent.com/70622731/115699379-9122bd80-a3a0-11eb-97e6-f309d5b65f61.png)
+![image](https://user-images.githubusercontent.com/70622731/115699448-a0097000-a3a0-11eb-9efc-1780f32e21b8.png)
+
+
 # 프로젝트 기능
 
 - 로그인, 회원가입
-- 게시글, 댓글 CRUD
-- 찜하기, 팔로우
+- 소셜로그인
+- 게시글 CRUD
+- 이미지 S3 업로드
+- 댓글 CRUD
+- 찜하기 (좋아요)
+- 팔로우
 - 채팅
 
 
@@ -861,3 +898,385 @@ public class FollowService {
 
 - 현재로그인한 사용자가 followUserId 사용자한테 follow한 상태인지 확인하기 위해서 **followRepository.findByFollowUserIdAndUserId**를 사용하여 테이블이 존재한다면 팔로우를 한 상태이기 때문에 map에 true를 넣어서 반환해줍니다.
 - 그리고 followUserId 사용자에 총 팔로우 수를 **followRepository.findByFollowUserId**를 사용하여 List.size()로 팔로우 수를 찾아서 map에 넣어서 반환해줍니다.
+
+
+
+<br>
+<br>
+
+## 회원가입 기능
+
+### SignupReqeustDto
+``` java
+    @RequiredArgsConstructor
+    @Getter
+    @Setter
+    public class SignupReqeustDto {
+
+        @NotBlank(message = "아이디를 비워둘 수 없습니다.")
+        @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*[0-9])[A-Za-z[0-9]]{4,12}$",
+                message = "아이디는 숫자와 영어를 포함한 4-12글자여야합니다.")
+        private String username;
+
+        @NotBlank(message = "비밀번호를 비워둘 수 없습니다.")
+        @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*[0-9])(?=.*[$@$!%*#?&])[A-Za-z[0-9]$@$!%*#?&]{8,20}$",
+                message = "비밀번호는 영문 대소문자와 숫자,특수문자를 포함한 8-20자여야합니다.")
+        private String password;
+
+        @NotBlank(message = "이메일을 비워둘 수 없습니다.")
+        @Email(message = "메일 양식을 지켜주세요.")
+        private String email;
+
+        private String myself;
+
+``` 
+- @vaild 어노테이션을 이용해서 객체에서 유효성 검사를 처리합니다. (controller의 @RequestBody 에 @vaild 추가해서 사용.)
+- @Patten : 정규식을 이용하여 유효성 검사 가능.
+- @NotBlank : 빈값(공백 포함)인 경우 프론트에게 error메세지 반환.
+- @Email : 이메일 양식 확인
+
+
+
+### UserController
+
+``` java
+    /* 아이디(username) 중복 체크 */
+    @GetMapping("/signups/username/{username}")
+    public ResponseEntity username(@PathVariable String username){
+        return ResponseEntity.ok(userService.usernameCheck(username));
+    }
+
+    /* 이메일 중복 체크 */
+    @GetMapping("/signups/email/{email}")
+    public ResponseEntity email(@PathVariable String email){
+        return ResponseEntity.ok(userService.emailCheck(email));
+    }
+``` 
+- 서버단에서 이메일과 아이디를  DB에 혹시라도 잘못된 데이터가 들어가지않도록 처리했습니다.
+
+
+### UserControllerTest
+``` java
+ @Test
+        public void 회원가입() throws Exception {
+
+            //given
+            SignupReqeustDto reqeustDto = SignupReqeustDto.builder()
+                    .username(username)
+                    .password(password)
+                    .email(email)
+                    .city(city)
+                    .street(street)
+                    .myself(myself)
+                    .build();
+            String url = "http://localhost:" + port + "/signups";
+
+            //when
+            ResponseEntity<Long> responseEntity = restTemplate.postForEntity(url, reqeustDto, Long.class);
+
+            //then
+            assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+
+            List<User> all = userRepository.findAll();
+
+            assertThat(all.get(0).getUsername()).isEqualTo(username);
+            assertThat(bCryptPasswordEncoder.matches(all.get(0).getPassword(), password));
+            assertThat(all.get(0).getEmail()).isEqualTo(email);
+            assertThat(all.get(0).getMyself()).isEqualTo(myself);
+            assertThat(all.get(0).getAddress().getCity()).isEqualTo(city);
+            assertThat(all.get(0).getAddress().getStreet()).isEqualTo(street);
+        }
+
+``` 
+- 회원가입과 관련된 테스트 코드를 작성하였습니다.
+
+<br>
+<br>
+
+## 로그인 기능
+
+
+### WebSecurityConfig
+``` java
+@Configuration
+@EnableWebSecurity//시큐리티 활성화
+@RequiredArgsConstructor
+public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+
+    private final CorsFilter corsFilter;
+    private final UserRepository userRepository;
+
+    /* 비밀번호 암호화 */
+    @Bean
+    public BCryptPasswordEncoder encodePwd(){
+        return new BCryptPasswordEncoder();
+    }
+
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+
+        // 한글 인코딩
+        CharacterEncodingFilter filter = new CharacterEncodingFilter();
+        filter.setEncoding("UTF-8");
+        filter.setForceEncoding(true);
+        http.addFilterBefore(filter, CsrfFilter.class);
+
+
+        http.csrf().disable();
+
+        http
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)  //session을 사용하지않겠다 .
+
+                //jwt와 cors 관련 filter
+                .and()
+                    .addFilter(corsFilter)
+                    .formLogin().disable()
+                    .httpBasic().disable()
+                    .addFilter(new JwtAuthenticationFilter(authenticationManager()))
+                    .addFilter(new JwtAuthorizationFilter(authenticationManager(),userRepository))
+                //권한 설정
+                .authorizeRequests()
+                    .antMatchers("/h2-console/**" ).permitAll()
+                    .antMatchers("/user/**").permitAll()
+                    //.antMatchers("/boards").access("hasRole('ROLE_USER') ")
+                    .antMatchers("/boards/**").permitAll()
+                    .antMatchers("/kakao/**").permitAll()
+                    .anyRequest().permitAll();
+
+    }
+
+}
+``` 
+
+- JwtAuthenticationFilter(토큰발급)와 JwtAuthorizationFilter(토큰 인증)를 구현해 Spring security 필터가 작동되기전에 구현한 필터를 타도록 설정을 해두었습니다.
+- jwt토큰을 사용함으로 session을 사용하지않고 구현한 필터를 통해 로그인과 권한 인증이 검증되도록 구현했습니다.
+
+### JwtAuthenticationFilter
+``` java
+@RequiredArgsConstructor
+public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
+
+    private final AuthenticationManager authenticationManager;
+
+    // login요청을 하면 로그인 시도를 위해서 실행되는 함수.
+    @Override
+    public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
+        System.out.println("로그인 시도 중.");
+
+
+        try {
+            //username,password를 받는다.
+            ObjectMapper om = new ObjectMapper();
+            User user = om.readValue(request.getInputStream(), User.class);
+            System.out.println(user);
+
+            UsernamePasswordAuthenticationToken authenticationToken
+                    = new UsernamePasswordAuthenticationToken(user.getUsername(),user.getPassword());
+
+            //PrincipalDetailsService의 loadUserByUseranme() 함수가 실행됨.
+            Authentication authentication = authenticationManager.authenticate(authenticationToken);
+            PrincipalDetails principalDetails = (PrincipalDetails) authentication.getPrincipal();
+            System.out.println("로그인 완료 : "+ principalDetails.getUser().getUsername());
+            return authentication;
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+        return null;
+    }
+
+    //JWT토큰을 만들어서 response에 넘겨줌.
+    @Override
+    protected void successfulAuthentication(HttpServletRequest request,
+                                            HttpServletResponse response,
+                                            FilterChain chain,
+                                            Authentication authResult) throws IOException, ServletException {
+        System.out.println("인증 완료 토큰발급.");
+
+        // user정보를 통해서 jwt토큰 생성.
+        PrincipalDetails principalDetails = (PrincipalDetails) authResult.getPrincipal();
+        String jwtToken = JWT.create()
+                .withSubject(JwtProperties.SECRET)
+                .withExpiresAt(new Date(System.currentTimeMillis() + JwtProperties.EXPIRATION_TIME))
+                .withClaim("id", principalDetails.getUser().getId())
+                .withClaim("username", principalDetails.getUser().getUsername())
+                .sign(Algorithm.HMAC512(JwtProperties.SECRET));
+
+        /* body에 담을 유저 정보 생성*/
+        ObjectMapper objectMapper = new ObjectMapper();
+        UserInfoDto userInfoDto = new UserInfoDto(principalDetails.getUser().getId(),principalDetails.getUsername(),principalDetails.getUser().getEmail());
+        String userInfoJson = objectMapper.writeValueAsString(userInfoDto);
+
+        /* response에 토큰과 유저정보 담음.*/
+        response.addHeader(JwtProperties.HEADER_STRING,JwtProperties.TOKEN_PREFIX+jwtToken);
+        response.addHeader("Content-type","applcation/json");
+        response.getWriter().write(userInfoJson);
+    }
+}
+```
+- UsernamePasswordAuthenticationFilter 필터를 상속받아 구현했으며 토큰을 만들어서 발급하는 방식으로 되어있습니다.
+- attemptAuthentication함수가 요청을 성공적으로 수행하면 successfulAuthentication가 작동하는 방식으로 구현되어있습니다. 토큰을 발급해 유저정보를 reponse에 실어 보냅니다.
+
+### KakaoLoginController
+
+```java
+   //저장한 kakaoUser정보로 로그인요청
+        if(kakaoLoginInfo != null){
+
+            String username = kakaoLoginInfo.getKakaoId();
+            String password = kakaoLoginInfo.getPassword();
+
+            //HttpPost 요청
+            HttpClient client = HttpClientBuilder.create().build();
+            String postUrl ="http://localhost:8080/login";
+            HttpPost httpPost = new HttpPost(postUrl);
+            String data = "{" +
+                    "\"username\": \""+username+"\", " +
+                    "\"password\": \""+password+"\""+
+                    "}";
+
+            StringEntity entity = new StringEntity(data, ContentType.APPLICATION_FORM_URLENCODED);
+            httpPost.setEntity(entity);
+
+            HttpResponse responsePost = client.execute(httpPost);
+
+            //HttpPost요청이 정상적으로 완료 되었다면
+            if (responsePost.getStatusLine().getStatusCode() == 200) {
+
+                // response Body에 있는 값을 꺼냄
+                HttpEntity entitys = responsePost.getEntity();
+                String content = EntityUtils.toString(entitys);
+
+                // response header에 있는 token꺼냄
+                String value = responsePost.getFirstHeader("Authorization").getValue();
+
+                //다시 진짜 사용자의 요청에 리턴해 줄 response에 토큰과 사용자 정보를 넣는다.
+                response.addHeader("Authonrazation", value);
+                response.getWriter().write(content);
+
+            } else {
+                //에러 처리.
+                response.getWriter().write("kakaoLoginError");
+            }
+
+        }else{
+            //에러처리
+            response.getWriter().write("kakaoUserNotFount");
+        }
+        
+  ```
+  - 카카오톡 로그인의 경우 카카오서버에서 카카오 유저의 정보를 반환해서 해당하는 유저가 없는 경우에 회원가입을 진행합니다 . 그 후 회원가입된 정보를 토대로 구현해둔 login로직을 타도록 HttpClinet를 이용해 서버에게 로그인 요청을 보내는 방식으로 구현되어있습니다.
+
+
+---------------
+# 1:1 채팅하기
+
+[![2021-04-22-9-43-39.png](https://i.postimg.cc/4NmxfC35/2021-04-22-9-43-39.png)](https://postimg.cc/6yxXcmn2)
+
+### WebSocket & STOMP
+
+- **WebSocket은 웹 상에서 쉽게 소켓통신을 하게 해주는 라이브러리**로 실시간 채팅 서비스 등등 여러 유요한 서비스에 기반이 된다. **스프링 부트환경에서는 이러한 서비스를 구현하기 위해서 필요한 2가지**가 있다.
+  **WebSocket의 기능을 보완해주고 향상시켜주는 SockJs라이브러**리와 **메시징 전송을 좀 더 효율적으로 지원해주기 위한 STOMP 프로토콜**이 존재한다.일반 스프링 환경에서는 핸들러만 구현해주고 직접 호출했지만 **부트 환경에서는 핸들러와 브로커라는 개념**을 이용해서 서로간의 통신을 하게 된다.
+
+
+
+### STOMP
+
+- **STOMP는 Simple/Streaming Text Oriented Messaging Protocol**의 약자이다. **텍스트 기반의 메세징 프로토콜**이다. 유사한 프로토콜은 OASIS표준으로 선정된 AMQP가 있다. 웹 소켓을 지원한다. **TCP나 WebSocket과 같은 신뢰성있는 양방향 streaming network protocol상에 사용**될 수 있다. **HTTP에 모델링 된 frame 기반** 프로토콜이다.
+
+  - 아래는 해당 frame워크의 구조이다
+
+  [![2021-04-22-9-52-27.png](https://i.postimg.cc/XJfQBD71/2021-04-22-9-52-27.png)](https://postimg.cc/G8pkZKDv)
+
+  
+
+  
+
+  - **헤더와 바디로 구성**되어있다. 아래는 STOMP의 구조이다.
+
+  [![2021-04-22-9-52-34.png](https://i.postimg.cc/GtbzFJ4L/2021-04-22-9-52-34.png)](https://postimg.cc/qhZ80KcS)
+
+  - 위의 구조에서 중요한 개념은 브로커와 Subscribe의 개념이다. STOMP는 구독이라는 개념을 통해 내가 통신하고자 하는 주체(topic)을 판단하여 브로커라는 개념을 두어 실시간, 지속적으로 관심을 가지며 해당 요청이 들어오면 처리하게 되는 구조이다.
+
+  - **Connect**
+
+    [![2021-04-22-10-07-32.png](https://i.postimg.cc/mgV0nkY2/2021-04-22-10-07-32.png)](https://postimg.cc/NK9J9gCW)
+
+    연결에 관한 구조이다. **버전정보와 현재의 세션정보를 가져온다**. 세션은 스프링 시큐리티를 연동하여 등록한다.
+
+  - **Subscribe**
+
+    [![2021-04-22-10-07-41.png](https://i.postimg.cc/FzgPJCGs/2021-04-22-10-07-41.png)](https://postimg.cc/Cn5C3NWW)
+
+    **구독이라는 개념을 이용하여 현재 메세지에 대한 목적지**를 설정한다. 구조를 보면 각각의 destination이 있다. **Connect 이후에 subscribe를 설정**하게 된다. 등록되지 않은 subscribe를 호출 시 찾을 수 없기에 정확한 통신이 되지 않는다.
+
+  - **Message**
+
+    [![2021-04-22-10-44-41.png](https://i.postimg.cc/sXFqQN7b/2021-04-22-10-44-41.png)](https://postimg.cc/7CVmjXBN)
+
+    메세지를 전송 시 구조이다. 메세지의 전달지(destination)와 해당 메세지의 정보들이 출력된다. 현재 위의 구조는 데이터의 타입은 JSON으로 전송하였고 목적지는 /topic/ + roomId이다.
+    데이터는 JSON구조로 key, value로 되어있다. 다양한 데이터 타입을 가질 수 있다.
+
+----------------
+
+
+
+### WebSocket연동
+
+1. Build.gradle
+
+   ```java
+   implementation 'org.springframework.boot:spring-boot-starter-websocket'
+   ```
+
+   - 웹 소켓 라이브러리를 등록해준다.
+
+2. WebSocketConfig.java
+
+   ```java
+   @Configuration
+   @EnableWebSocketMessageBroker
+   public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
+       @Override
+       public void registerStompEndpoints(StompEndpointRegistry registry) {
+           registry.addEndpoint("/chatting").withSockJS();
+           registry.addEndpoint("/chatting");
+       }
+   
+       @Override
+       public void configureMessageBroker(MessageBrokerRegistry registry) {
+           registry.enableSimpleBroker("/topic");
+           registry.setApplicationDestinationPrefixes("/app");
+       }
+   }
+   ```
+
+   WebSocketMessageBrokerConfigure를 implement를 받아서 관련 메소드들을 오버라이드 합니다. 위 STOMP의 구조를 설명했듯이 브로커라는 개념이 적용된다. setApplicationDesinationPrefixes 메소드를 이용하여서 전송할 목적지의 prefix값을 설정한다. 마지막으로 addEndpoint로 웹 소켓에서 활용될 주소를 적어주고 withSockJS를 이용하여서 향상된 SockJS를 사용 하겠다는 것을 알려준다.
+
+3. ChatMessageController.java
+
+   ```java
+   @Controller
+   @RequiredArgsConstructor
+   public class ChatMessageController {
+       private final SimpMessagingTemplate simpMessagingTemplate;
+       private final ChatMessageService chatMessageService;
+       @MessageMapping("/chat/send")
+       public void sendMsg(ChatMessageForm message) {
+           String receiver = message.getReceiver();
+           System.out.println(receiver);
+           chatMessageService.save(message);
+           simpMessagingTemplate.convertAndSend("/topic/" + receiver,message);
+       }
+   
+   }
+   ```
+
+   다음과 같이 controller단에서 받을 수 있다. **/app의 경우 기본 publish로 지정했기 때문에 /app 이후 url만 MessageMapping으로 요청받고** 각자 입맛에 맞게 변형한 뒤 **SimplMessagingTemplate를 통해서 내가 보내주고자 하는 사람이 subscribe한 링크로 보내주면 됩니다.**
+   **이런식으로 client가 채팅방을 만들 때 publish는 모두 동이랗ㄴ 링크로 두고 subscribe를 개인의 고유한 url로 만들 어서 각각의 유저끼리 1:1 채팅이 가능하도록 합니다.**
+
+
+
+

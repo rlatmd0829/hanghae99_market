@@ -63,6 +63,7 @@ public class UserService {
         return userRepository.findByUsername(sender);
     }
 
+
     public String emailCheck(String email) {
         boolean result = userRepository.existsByEmail(email);
         if (!result) {

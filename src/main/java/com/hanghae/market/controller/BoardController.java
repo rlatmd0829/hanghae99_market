@@ -109,8 +109,8 @@ public class BoardController {
 
     // 게시글 상세페이지
     @GetMapping("/boards/{boardId}/details")
-    public BoardDetailDto getDetailBoard(@PathVariable Long boardId, @AuthenticationPrincipal PrincipalDetails userDetails){
-        return boardService.getDetailBoard(boardId, userDetails.getUser().getId());
+    public BoardDetailDto getDetailBoard(@PathVariable Long boardId){
+        return boardService.getDetailBoard(boardId);
     }
 
 }

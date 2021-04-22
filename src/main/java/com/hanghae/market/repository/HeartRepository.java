@@ -7,6 +7,5 @@ import java.util.List;
 
 public interface HeartRepository extends JpaRepository<Heart, Long> {
     Heart findByBoardIdAndUserId(Long board_id, Long user_id);
-
     List<Heart> findByBoardId(Long boardId);
 }

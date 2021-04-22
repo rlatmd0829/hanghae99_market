@@ -128,7 +128,7 @@ public class BoardService {
 
 
     // 게시글 상세조회
-    public BoardDetailDto getDetailBoard(Long boardId, Long id) { // 게시글 작성한 사람의 아이디와 이메일을 보낸다.
+    public BoardDetailDto getDetailBoard(Long boardId) { // 게시글 작성한 사람의 아이디와 이메일을 보낸다.
         Board board = boardRepository.findById(boardId).orElseThrow(
                 ()-> new IllegalArgumentException("게시글이 존재하지 않습니다.")
         );

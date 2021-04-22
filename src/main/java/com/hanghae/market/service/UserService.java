@@ -2,6 +2,7 @@ package com.hanghae.market.service;
 
 
 import com.hanghae.market.dto.SignupReqeustDto;
+import com.hanghae.market.model.User;
 import com.hanghae.market.repository.UserRepository;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -62,11 +63,12 @@ public class UserService {
         return userRepository.findByUsername(sender);
     }
 
-    public String emailCheck(String email){
-        boolean result =  userRepository.existsByEmail(email);
+
+    public String emailCheck(String email) {
+        boolean result = userRepository.existsByEmail(email);
         if (!result) {
             return "true";
-        }else{
+        } else {
             return "false";
         }
     }

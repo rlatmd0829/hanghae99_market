@@ -3,6 +3,27 @@
 항해마켓 프로젝트입니다.
 항해마켓은 판매자가 팔고싶은 물건을 등록할 수 있고 판매자와 구매자 간의 채팅기능을 사용할 수 있는 마켓입니다.
 
+팀프로젝트의 백엔드 Repository 입니다.
+
+[프론트엔드 Repository](https://github.com/Jinnycorn/hanghaemarket)
+
+# 개요
+- 명칭 : 항해마켓
+- 개발 인원 : 5명
+- 개발 기간 : 2021.04.09 ~ 2021.04.22
+- 개발 환경 : React, Spring
+- 형상 관리 툴 : git
+- 일정 관리 툴 : [Notion](https://www.notion.so/3295a6aca9bd411b9cc7b5eadb9239cb?v=002a8755c0414bf388614efa88f27d8a)
+- 사이트 : 
+- 시연 영상 : 
+
+# API 설계
+![image](https://user-images.githubusercontent.com/70622731/115699219-6b95b400-a3a0-11eb-8c00-c4fcd0c3f420.png)
+![image](https://user-images.githubusercontent.com/70622731/115699310-823c0b00-a3a0-11eb-94ca-103b24c80005.png)
+![image](https://user-images.githubusercontent.com/70622731/115699379-9122bd80-a3a0-11eb-97e6-f309d5b65f61.png)
+![image](https://user-images.githubusercontent.com/70622731/115699448-a0097000-a3a0-11eb-9efc-1780f32e21b8.png)
+
+
 # 프로젝트 기능
 
 - 로그인, 회원가입

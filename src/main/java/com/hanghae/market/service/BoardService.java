@@ -2,6 +2,7 @@ package com.hanghae.market.service;
 
 import com.hanghae.market.dto.BoardDetailDto;
 import com.hanghae.market.dto.BoardMainDto;
+import com.hanghae.market.dto.BoardPostDto;
 import com.hanghae.market.dto.BoardRequestDto;
 import com.hanghae.market.model.Board;
 import com.hanghae.market.model.User;
@@ -39,7 +40,7 @@ public class BoardService {
 
     // 검색한 게시글 조회
     public List<BoardMainDto> getSearchBoard(String title) {
-        List<Board> board = boardRepository.findByTitleContainingOrContentContaining(title, title);
+        List<Board> board = boardRepository.findByTitleContainingOrContentContainingOrderByModifiedAtDesc(title, title);
         List<BoardMainDto> mainDtoList = new ArrayList<>();
         // main에 필요한 값들만 Dto로 만들어서 보내준다.
         for(int i=0; i<board.size(); i++){
@@ -75,19 +76,21 @@ public class BoardService {
 //    }
 
     // 게시글 작성
-    public void createBoard(BoardRequestDto requestDto, Long userId) {
+    public BoardPostDto createBoard(BoardRequestDto requestDto, Long userId) {
         User user = userRepository.findById(userId).orElseThrow(
                 () -> new IllegalArgumentException("계정이 존재하지 않습니다.")
         );
         Board board = new Board(requestDto);
         board.addUser(user);
         boardRepository.save(board);
+        BoardPostDto boardPostDto = new BoardPostDto(board);
+        return boardPostDto;
 
     }
 
     // 게시글 수정
     @Transactional
-    public Board updateBoard(Long boardId, BoardRequestDto requestDto, Long userId) {
+    public BoardPostDto updateBoard(Long boardId, BoardRequestDto requestDto, Long userId) {
         User user = userRepository.findById(userId).orElseThrow(
                 () -> new IllegalArgumentException("계정이 존재하지 않습니다.")
         );
@@ -96,7 +99,8 @@ public class BoardService {
         );
         if (board.getUser().getId().equals(userId)){
             board.update(requestDto);
-            return board;
+            BoardPostDto boardPostDto = new BoardPostDto(board);
+            return boardPostDto;
         }
         else{
             return null;
@@ -124,12 +128,12 @@ public class BoardService {
 
 
     // 게시글 상세조회
-    public BoardDetailDto getDetailBoard(Long boardId, Long id) {
+    public BoardDetailDto getDetailBoard(Long boardId, Long id) { // 게시글 작성한 사람의 아이디와 이메일을 보낸다.
         Board board = boardRepository.findById(boardId).orElseThrow(
                 ()-> new IllegalArgumentException("게시글이 존재하지 않습니다.")
         );
 
-        BoardDetailDto boardDetailDto = new BoardDetailDto(board, board.getUser().getId());
+        BoardDetailDto boardDetailDto = new BoardDetailDto(board);
         return boardDetailDto;
     }
 

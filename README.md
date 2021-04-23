@@ -26,8 +26,8 @@
 - 개발 환경 : React, Spring
 - 형상 관리 툴 : git
 - 일정 관리 툴 : [Notion](https://www.notion.so/3295a6aca9bd411b9cc7b5eadb9239cb?v=002a8755c0414bf388614efa88f27d8a)
-- 사이트 : 
-- 시연 영상 : 
+- 사이트 : [항해마켓](http://hanghaemarket.shop/)
+- 시연 영상 : [유튜브 링크](https://youtube.com/watch?v=idAJS0OLPhY&feature=share)
 
 # API 설계
 ![image](https://user-images.githubusercontent.com/70622731/115699219-6b95b400-a3a0-11eb-8c00-c4fcd0c3f420.png)

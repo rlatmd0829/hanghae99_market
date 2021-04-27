@@ -102,6 +102,7 @@ public class BoardController {
         if (board==null){
             Message message = new Message("자신이 작성한 게시글만 삭제할 수 있습니다.");
             return new ResponseEntity<>(message, HttpStatus.INTERNAL_SERVER_ERROR);
+
         }
         return ResponseEntity.ok().build();
 

@@ -42,6 +42,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
         http.csrf().disable();
 
+
         http
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)  //session을 사용하지않겠다 .
 
@@ -61,7 +62,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                     .antMatchers("/kakao/**").permitAll()
                     .antMatchers("/api/chat/newChat/**").permitAll()
                     .antMatchers("/chat/send").permitAll()
-                    .antMatchers("/api/chat/**").permitAll()
+                    .antMatchers("/api/chat/**")
+                    .access("hasRole('ROLE_USER')")
                     .antMatchers("/personalChat/**").permitAll()
                     .anyRequest().permitAll();
 

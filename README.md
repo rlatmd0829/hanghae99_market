@@ -17,6 +17,7 @@
 
 - 로그인 처리는 Jwt Token 방식으로 처리
 - 게시글 작성 시 프론트에서 이미지 파일 형태로 받아 서버측에서 S3에 업로드 후 Url 돌려주는 방식
+- 채팅은 STOMP와 SockJS로 구성
 
 # 개요
 - 명칭 : 항해마켓
@@ -25,8 +26,8 @@
 - 개발 환경 : React, Spring
 - 형상 관리 툴 : git
 - 일정 관리 툴 : [Notion](https://www.notion.so/3295a6aca9bd411b9cc7b5eadb9239cb?v=002a8755c0414bf388614efa88f27d8a)
-- 사이트 : 
-- 시연 영상 : 
+- 사이트 : [항해마켓](http://hanghaemarket.shop/)
+- 시연 영상 : [유튜브 링크](https://youtube.com/watch?v=idAJS0OLPhY&feature=share)
 
 # API 설계
 ![image](https://user-images.githubusercontent.com/70622731/115699219-6b95b400-a3a0-11eb-8c00-c4fcd0c3f420.png)
@@ -1167,6 +1168,114 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         
   ```
   - 카카오톡 로그인의 경우 카카오서버에서 카카오 유저의 정보를 반환해서 해당하는 유저가 없는 경우에 회원가입을 진행합니다 . 그 후 회원가입된 정보를 토대로 구현해둔 login로직을 타도록 HttpClinet를 이용해 서버에게 로그인 요청을 보내는 방식으로 구현되어있습니다.
+
+
+---------------
+# 1:1 채팅하기
+
+[![2021-04-22-9-43-39.png](https://i.postimg.cc/4NmxfC35/2021-04-22-9-43-39.png)](https://postimg.cc/6yxXcmn2)
+
+### WebSocket & STOMP
+
+- **WebSocket은 웹 상에서 쉽게 소켓통신을 하게 해주는 라이브러리**로 실시간 채팅 서비스 등등 여러 유요한 서비스에 기반이 된다. **스프링 부트환경에서는 이러한 서비스를 구현하기 위해서 필요한 2가지**가 있다.
+  **WebSocket의 기능을 보완해주고 향상시켜주는 SockJs라이브러**리와 **메시징 전송을 좀 더 효율적으로 지원해주기 위한 STOMP 프로토콜**이 존재한다.일반 스프링 환경에서는 핸들러만 구현해주고 직접 호출했지만 **부트 환경에서는 핸들러와 브로커라는 개념**을 이용해서 서로간의 통신을 하게 된다.
+
+
+
+### STOMP
+
+- **STOMP는 Simple/Streaming Text Oriented Messaging Protocol**의 약자이다. **텍스트 기반의 메세징 프로토콜**이다. 유사한 프로토콜은 OASIS표준으로 선정된 AMQP가 있다. 웹 소켓을 지원한다. **TCP나 WebSocket과 같은 신뢰성있는 양방향 streaming network protocol상에 사용**될 수 있다. **HTTP에 모델링 된 frame 기반** 프로토콜이다.
+
+  - 아래는 해당 frame워크의 구조이다
+
+  [![2021-04-22-9-52-27.png](https://i.postimg.cc/XJfQBD71/2021-04-22-9-52-27.png)](https://postimg.cc/G8pkZKDv)
+
+  
+
+  
+
+  - **헤더와 바디로 구성**되어있다. 아래는 STOMP의 구조이다.
+
+  [![2021-04-22-9-52-34.png](https://i.postimg.cc/GtbzFJ4L/2021-04-22-9-52-34.png)](https://postimg.cc/qhZ80KcS)
+
+  - 위의 구조에서 중요한 개념은 브로커와 Subscribe의 개념이다. STOMP는 구독이라는 개념을 통해 내가 통신하고자 하는 주체(topic)을 판단하여 브로커라는 개념을 두어 실시간, 지속적으로 관심을 가지며 해당 요청이 들어오면 처리하게 되는 구조이다.
+
+  - **Connect**
+
+    [![2021-04-22-10-07-32.png](https://i.postimg.cc/mgV0nkY2/2021-04-22-10-07-32.png)](https://postimg.cc/NK9J9gCW)
+
+    연결에 관한 구조이다. **버전정보와 현재의 세션정보를 가져온다**. 세션은 스프링 시큐리티를 연동하여 등록한다.
+
+  - **Subscribe**
+
+    [![2021-04-22-10-07-41.png](https://i.postimg.cc/FzgPJCGs/2021-04-22-10-07-41.png)](https://postimg.cc/Cn5C3NWW)
+
+    **구독이라는 개념을 이용하여 현재 메세지에 대한 목적지**를 설정한다. 구조를 보면 각각의 destination이 있다. **Connect 이후에 subscribe를 설정**하게 된다. 등록되지 않은 subscribe를 호출 시 찾을 수 없기에 정확한 통신이 되지 않는다.
+
+  - **Message**
+
+    [![2021-04-22-10-44-41.png](https://i.postimg.cc/sXFqQN7b/2021-04-22-10-44-41.png)](https://postimg.cc/7CVmjXBN)
+
+    메세지를 전송 시 구조이다. 메세지의 전달지(destination)와 해당 메세지의 정보들이 출력된다. 현재 위의 구조는 데이터의 타입은 JSON으로 전송하였고 목적지는 /topic/ + roomId이다.
+    데이터는 JSON구조로 key, value로 되어있다. 다양한 데이터 타입을 가질 수 있다.
+
+----------------
+
+
+
+### WebSocket연동
+
+1. Build.gradle
+
+   ```java
+   implementation 'org.springframework.boot:spring-boot-starter-websocket'
+   ```
+
+   - 웹 소켓 라이브러리를 등록해준다.
+
+2. WebSocketConfig.java
+
+   ```java
+   @Configuration
+   @EnableWebSocketMessageBroker
+   public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
+       @Override
+       public void registerStompEndpoints(StompEndpointRegistry registry) {
+           registry.addEndpoint("/chatting").withSockJS();
+           registry.addEndpoint("/chatting");
+       }
+   
+       @Override
+       public void configureMessageBroker(MessageBrokerRegistry registry) {
+           registry.enableSimpleBroker("/topic");
+           registry.setApplicationDestinationPrefixes("/app");
+       }
+   }
+   ```
+
+   WebSocketMessageBrokerConfigure를 implement를 받아서 관련 메소드들을 오버라이드 합니다. 위 STOMP의 구조를 설명했듯이 브로커라는 개념이 적용된다. setApplicationDesinationPrefixes 메소드를 이용하여서 전송할 목적지의 prefix값을 설정한다. 마지막으로 addEndpoint로 웹 소켓에서 활용될 주소를 적어주고 withSockJS를 이용하여서 향상된 SockJS를 사용 하겠다는 것을 알려준다.
+
+3. ChatMessageController.java
+
+   ```java
+   @Controller
+   @RequiredArgsConstructor
+   public class ChatMessageController {
+       private final SimpMessagingTemplate simpMessagingTemplate;
+       private final ChatMessageService chatMessageService;
+       @MessageMapping("/chat/send")
+       public void sendMsg(ChatMessageForm message) {
+           String receiver = message.getReceiver();
+           System.out.println(receiver);
+           chatMessageService.save(message);
+           simpMessagingTemplate.convertAndSend("/topic/" + receiver,message);
+       }
+   
+   }
+   ```
+
+   다음과 같이 controller단에서 받을 수 있다. **/app의 경우 기본 publish로 지정했기 때문에 /app 이후 url만 MessageMapping으로 요청받고** 각자 입맛에 맞게 변형한 뒤 **SimplMessagingTemplate를 통해서 내가 보내주고자 하는 사람이 subscribe한 링크로 보내주면 됩니다.**
+   **이런식으로 client가 채팅방을 만들 때 publish는 모두 동이랗ㄴ 링크로 두고 subscribe를 개인의 고유한 url로 만들 어서 각각의 유저끼리 1:1 채팅이 가능하도록 합니다.**
 
 
 

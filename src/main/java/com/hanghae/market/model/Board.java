@@ -22,10 +22,10 @@ public class Board extends Timestamped{
     private String content;
     @Column(nullable = false)
     private int price;
-//    @Column(nullable = true)
-//    private boolean status;
-//    @Column(nullable = true)
-//    private boolean exchange;
+    @Column(nullable = true)
+    private boolean status;
+    @Column(nullable = true)
+    private boolean exchange;
     private String imgUrl;
 
     @ManyToOne(fetch = FetchType.LAZY)
